@@ -12,16 +12,15 @@ interface SampleCellProps {
     samples: any[],
     onPrint: (event: any, sample: any) => void
 }
+
 const SampleCell = (props: SampleCellProps) => {
     const sample = props.sample;
 
      const initialSampleState = {
         qr_code_key: '',
-        sample_id: '',
-        experiment_id: '',
-        storage_condition: '',
-        contents: '',
-        analyst: '',
+        sample_name: '',
+        MK: '',
+        ELNnotebooknumber: '',
         date_entered: (new Date(Date.now())).toISOString().split('T')[0],
         expiration_date: (new Date(Date.now())).toISOString().split('T')[0],
         date_modified: (new Date(Date.now())).toISOString().split('T')[0],
@@ -51,14 +50,11 @@ const SampleCell = (props: SampleCellProps) => {
 
     return (
         sample.qr_code_key != selectedSample.qr_code_key ? (
-            <TableRow key={sample.qr_code_key} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            style={{background: (new Date(sample.expiration_date) < new Date(Date.now()) ? 'red' : 'white' )}}>
+            <TableRow key={sample.qr_code_key} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell component="th" scope="row">{sample.qr_code_key}</TableCell>
-                <TableCell align="right">{sample.sample_id}</TableCell>
-                <TableCell align="right">{sample.experiment_id}</TableCell>
-                <TableCell align="right">{sample.storage_condition}</TableCell>
-                <TableCell align="right">{sample.contents}</TableCell>
-                <TableCell align="right">{sample.analyst}</TableCell>
+                <TableCell align="right">{sample.sample_name}</TableCell>
+                <TableCell align="right">{sample.MK}</TableCell>
+                <TableCell align="right">{sample.ELNnotebooknumber}</TableCell>
                 <TableCell align="right">{sample.date_entered}</TableCell>
                 <TableCell align="right">{sample.date_modified}</TableCell>
                 <TableCell align="right">{sample.expiration_date}</TableCell>
@@ -71,41 +67,31 @@ const SampleCell = (props: SampleCellProps) => {
                 <TableCell align="right">
                     <TextField
                         margin='normal'
-                        name="experimentID" 
+                        name="samplename" 
                         variant="outlined" 
-                        label="Experiment ID" 
-                        value={selectedSample.experiment_id}
-                        onChange={(event) => setSelectedSample({...selectedSample, experiment_id: event.target.value})}
+                        label="Sample Name" 
+                        value={selectedSample.sample_name}
+                        onChange={(event) => setSelectedSample({...selectedSample, sample_name: event.target.value})}
                     />
                 </TableCell>
                 <TableCell align="right">
                     <TextField
                         margin='normal'
-                        name="storageCondition" 
+                        name="MK" 
                         variant="outlined" 
-                        label="Storage Condition" 
-                        value={selectedSample.storage_condition}
-                        onChange={(event) => setSelectedSample({...selectedSample, storage_condition: event.target.value})}
+                        label="MK" 
+                        value={selectedSample.MK}
+                        onChange={(event) => setSelectedSample({...selectedSample, MK: event.target.value})}
                     />
                 </TableCell>
                 <TableCell align="right">
                     <TextField
                         margin='normal'
-                        name="contents" 
+                        name="ELN notebooknumber" 
                         variant="outlined" 
-                        label="Contents"  
-                        value={selectedSample.contents}
-                        onChange={(event) => setSelectedSample({...selectedSample, contents: event.target.value})}
-                    />
-                </TableCell>
-                <TableCell align="right">
-                    <TextField
-                        margin='normal'
-                        name="analyst" 
-                        variant="outlined" 
-                        label="Analyst"  
-                        value={selectedSample.analyst}
-                        onChange={(event) => setSelectedSample({...selectedSample, analyst: event.target.value})}
+                        label="ELN notebooknumber"  
+                        value={selectedSample.ELNnotebooknumber}
+                        onChange={(event) => setSelectedSample({...selectedSample, ELNnotebooknumber: event.target.value})}
                     />
                 </TableCell>
                 <TableCell align="right">
@@ -139,7 +125,6 @@ const SampleCell = (props: SampleCellProps) => {
                         type="date"  
                         value={selectedSample.expiration_date}
                         onChange={(event) => setSelectedSample({...selectedSample, expiration_date: event.target.value})}
-                        // if current_date > expiration_date, make sample in red
                     />                                
                 </TableCell>
                 <TableCell> <IconButton onClick={handleEditSuccess}> <Check/> </IconButton> </TableCell>
