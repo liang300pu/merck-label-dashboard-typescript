@@ -51,7 +51,8 @@ const SampleCell = (props: SampleCellProps) => {
 
     return (
         sample.qr_code_key != selectedSample.qr_code_key ? (
-            <TableRow key={sample.qr_code_key} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            <TableRow key={sample.qr_code_key} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            style={{background: (new Date(sample.expiration_date) < new Date(Date.now()) ? 'red' : 'white' )}}>
                 <TableCell component="th" scope="row">{sample.qr_code_key}</TableCell>
                 <TableCell align="right">{sample.sample_id}</TableCell>
                 <TableCell align="right">{sample.experiment_id}</TableCell>
@@ -138,6 +139,7 @@ const SampleCell = (props: SampleCellProps) => {
                         type="date"  
                         value={selectedSample.expiration_date}
                         onChange={(event) => setSelectedSample({...selectedSample, expiration_date: event.target.value})}
+                        // if current_date > expiration_date, make sample in red
                     />                                
                 </TableCell>
                 <TableCell> <IconButton onClick={handleEditSuccess}> <Check/> </IconButton> </TableCell>

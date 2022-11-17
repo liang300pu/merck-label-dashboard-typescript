@@ -22,6 +22,13 @@
 - [ ] Add the ability to scan a qr code using scanner
 - [ ] Possibly add the ability for scientist to have an account, basically just name so that you could sort by analyst. Or find all samples by a scientist. May not need cause you could just search anyway
 - [ ] When creating a sample, cache the the form contents so that if the page is changed and then we come back, the form hasnt gone away
+- [ ] Mark samples in red if they are expired.
+- [ ] Set a note window to type in reasons why samples are edited and/or discarded.
+- [ ] Make a functionality to sort samples based on their created date.
+- [ ] Add a filter button.
+- [ ] User can click view history tab to see all the previous versions.
+- [ ] Add a button to view all the discarded samples.
+- [ ] Add button to show how many samples have been printed, how many samples in total, etc.
 
 # Label Management
 - Labels are generated once upon request and cached
