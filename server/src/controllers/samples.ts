@@ -1,7 +1,6 @@
 import { RequestHandler } from "express";
 import prisma, { STATUS, teamIsActive } from "../db";
-import { generateHashKey } from "../brother/qr";
-import { randomUUID } from "crypto";
+import { Sample } from "@prisma/client";
 
 /**
  * Base route /:team/samples
@@ -12,10 +11,58 @@ import { randomUUID } from "crypto";
 // [x] update
 // [x] get all /:team/samples
 // [x] get one /:team/samples/:id
-// get deleted, route: /team/samples/deleted
-// get history, route: /team/samples/:qr_code_key/audit
 
-export const getSamples: RequestHandler = async (req, res) => {
+// Need to think of a different route for this.
+// Currently clashes with get one sample
+// [~] get deleted, route: /:team/samples/deleted
+
+// [x] get history, route: /:team/samples/:id/audit
+
+export const getAllSamples: RequestHandler = async (req, res) => {
+
+    const deletedAuditIDs = (await prisma.deleted.groupBy({
+        by: ["audit_id"],
+        _sum: {
+            status: true
+        }
+    })).filter((group) => group._sum.status! > 0)
+       .map((group) => group.audit_id!);
+
+    const sampleGroups = (await prisma.sample.groupBy({
+        by: ["team_name", "audit_id"],
+        _max: {
+            audit_number: true
+        },
+    })).filter((group) => !deletedAuditIDs.includes(group.audit_id))
+       .map((group) => {
+            return {
+                team_name: group.team_name,
+                audit_id: group.audit_id,
+                audit_number: group._max.audit_number!
+            }
+        }
+    );
+
+    const samples = await prisma.sample.findMany({
+        where: {
+            OR: sampleGroups
+        }
+    });
+
+    const groupedByTeam: { [key: string]: Sample[] } = {};
+
+    for (const sample of samples) {
+        if (groupedByTeam[sample.team_name]) {
+            groupedByTeam[sample.team_name].push(sample);
+        } else {
+            groupedByTeam[sample.team_name] = [sample];
+        }
+    };
+
+    res.status(200).json(groupedByTeam);
+}
+
+export const getTeamsSamples: RequestHandler = async (req, res) => {
     const { team } = req.params;
 
     const teamExists = await teamIsActive(team);
@@ -68,7 +115,7 @@ export const getSamples: RequestHandler = async (req, res) => {
 
 export const getSample: RequestHandler = async (req, res) => {
     const { team, id } = req.params;
-    
+
     const teamExists = await teamIsActive(team);
 
     if (!teamExists)
@@ -98,6 +145,38 @@ export const getSample: RequestHandler = async (req, res) => {
         return res.status(404).json({ message: `Sample "${id}" not found` });
 
     res.status(200).json(sample);
+}
+
+export const getAuditTrail: RequestHandler = async (req, res) => {
+    const { team, id } = req.params;
+
+    const teamExists = await teamIsActive(team);
+
+    if (!teamExists)
+        return res.status(404).json({ message: `Team "${team}" not found` });
+
+    const sample = await prisma.sample.findUnique({
+        where: {
+            id
+        },
+        select: {
+            audit_id: true
+        }
+    });
+
+    if (!sample)
+        return res.status(404).json({ message: `Sample "${id}" not found` });
+
+    const auditTrail = await prisma.sample.findMany({
+        where: {
+            audit_id: sample.audit_id
+        },
+    });
+
+    // Make the highest audit number first (newest)
+    auditTrail.sort((a, b) => b.audit_number - a.audit_number);
+
+    res.status(200).json(auditTrail);
 }
 
 export const getDeletedSamples: RequestHandler = async (req, res) => {
@@ -138,6 +217,55 @@ export const createSample: RequestHandler = async (req, res) => {
     });
 
     res.status(201).json(sample);
+}
+
+export const updateSample: RequestHandler = async (req, res) => {
+    const { team, id } = req.params;
+
+    const teamExists = await teamIsActive(team);
+
+    if (!teamExists)
+        return res.status(404).json({ message: `Team "${team}" not found` });
+
+    const sample = await prisma.sample.findUnique({
+        where: {
+            id
+        }
+    });
+
+    if (!sample)
+        return res.status(404).json({ message: `Sample "${id}" not found` });
+
+    const isDeleted = await prisma.deleted.groupBy({
+        by: ["audit_id"],
+        where: {
+            audit_id: sample.audit_id
+        },
+        _sum: {
+            status: true
+        }
+    });
+
+    if (isDeleted.length > 0 && isDeleted[0]._sum.status! == 0)
+        return res.status(404).json({ message: `Sample "${id}" not found` });
+
+    const newSampleData = {
+        expiration_date: sample.expiration_date,
+        team_name: sample.team_name,
+        ...req.body,
+        data: {
+            ...(sample.data as object),
+            ...req.body.data
+        },
+        audit_id: sample.audit_id,
+        date_created: sample.date_created
+    }
+
+    const newSample = await prisma.sample.create({
+        data: newSampleData
+    });
+
+    res.status(200).json(newSample);
 }
 
 export const deleteSample: RequestHandler = async (req, res) => {

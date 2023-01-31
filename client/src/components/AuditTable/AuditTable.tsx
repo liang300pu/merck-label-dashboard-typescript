@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom"
-import { GeneralSample, Sample } from "../../api/types";
+import { GeneralSample, OldSample } from "../../api/types";
 import NavBar from "../NavBar/NavBar";
 import SampleTable from "../Samples/SampleTable";
 import { GridColDef } from "@mui/x-data-grid";

@@ -66,12 +66,12 @@ export const getTeamsField: RequestHandler = async (req, res) => {
 
 export const createTeamsField: RequestHandler = async (req, res) => {
     const { team } = req.params;
-    const { name, displayName } = req.body;
+    const { name, display_name } = req.body;
 
     const field = await prisma.teamField.create({
         data: {
             name,
-            displayName,
+            display_name,
             team_name: team,
             status: STATUS.CREATE
         }
@@ -97,7 +97,7 @@ export const deleteTeamsField: RequestHandler = async (req, res) => {
         data: {
             team_name: team,
             name: field.name,
-            displayName: field.displayName,
+            display_name: field.display_name,
             status: STATUS.DELETE
         }
     });
@@ -107,7 +107,7 @@ export const deleteTeamsField: RequestHandler = async (req, res) => {
 
 export const updateTeamsField: RequestHandler = async (req, res) => {
     const { team, id } = req.params;
-    const { name, displayName } = req.body;
+    const { name, display_name } = req.body;
 
     const originalField = await prisma.teamField.findUnique({
         where: {
@@ -122,7 +122,7 @@ export const updateTeamsField: RequestHandler = async (req, res) => {
         data: {
             team_name: team,
             name: originalField.name,
-            displayName: originalField.displayName,
+            display_name: originalField.display_name,
             status: STATUS.DELETE
         }
     });
@@ -131,7 +131,7 @@ export const updateTeamsField: RequestHandler = async (req, res) => {
         data: {
             team_name: team,
             name,
-            displayName,
+            display_name,
             status: STATUS.CREATE
         }
     });

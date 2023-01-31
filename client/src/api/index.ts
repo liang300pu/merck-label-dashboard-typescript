@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { GeneralSample, PSample, Printer, Sample } from './types'
+import { GeneralSample, PSample, Printer, OldSample } from './types'
 import { Team } from '../constants'
 
 const baseURL = 'http://localhost:5000'

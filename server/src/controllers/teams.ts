@@ -20,7 +20,7 @@ export const getTeams: RequestHandler = async (req, res) => {
             id: {
                 in: activeTeamsIDs
             }
-        }
+        },
     });
 
     res.status(200).json(activeTeams);
@@ -33,7 +33,7 @@ export const createTeam: RequestHandler = async (req, res) => {
         data: {
             name,
             status: STATUS.CREATE
-        }
+        },
     });
 
     res.status(200).json(team);
@@ -42,11 +42,18 @@ export const createTeam: RequestHandler = async (req, res) => {
 export const deleteTeam: RequestHandler = async (req, res) => {
     const { id } = req.params;
 
-    const team = await prisma.team.update({
+    const team = await prisma.team.findUnique({
         where: {
             id: parseInt(id)
-        },
+        }
+    });
+
+    if (!team)
+        return res.status(404).json({ message: `No team with id "${id}" was found` });
+
+    const deleted = await prisma.team.create({
         data: {
+            name: team.name,
             status: STATUS.DELETE
         }
     });

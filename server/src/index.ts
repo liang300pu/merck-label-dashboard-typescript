@@ -4,15 +4,12 @@ import cors from 'cors'
 
 import prisma from './db'
 
-import sampleRoutes from './routes/old/arnd_samples'
-import psampleRoutes from './routes/old/pscs_samples'
-import qrRoutes from './routes/old/qr'
-import deletedRoutes from './routes/old/deleted'
-import labelsRoutes from './routes/old/labels'
-
 import sampleRouter from './routes/samples'
 import teamsRouter from './routes/teams';
 import teamsFieldsRouter from './routes/teams_fields';
+import teamsLabelsRouter from './routes/teams_labels';
+import printersRouter from './routes/printers';
+import { getAllSamples } from './controllers/samples'
 
 (async function () {
     const app: express.Express = express()
@@ -21,15 +18,6 @@ import teamsFieldsRouter from './routes/teams_fields';
     app.use(bodyParser.json({ limit: '50mb' }))
     app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
     app.use(cors());
-
-    // OLD ROUTES
-
-    app.use('/arnd_samples', sampleRoutes)
-    app.use('/pscs_samples', psampleRoutes)
-    app.use('/qr', qrRoutes);
-
-    app.use('/deleted', deletedRoutes);
-    app.use('/labels', labelsRoutes);
     
     // ----------------------------------------------
     // NEW ROUTES :>)
@@ -38,7 +26,13 @@ import teamsFieldsRouter from './routes/teams_fields';
 
     app.use('/:team/fields', teamsFieldsRouter);
 
+    app.use('/:team/labels', teamsLabelsRouter);
+
     app.use('/teams', teamsRouter);
+
+    app.use('/printers', printersRouter);
+
+    app.get('/samples', getAllSamples);
 
     const server = app.listen(port, () => {
         console.log(`Server is running on port ${port}`)

@@ -8,9 +8,7 @@ import {
 
 // Redux imports
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
-import thunk from 'redux-thunk';
-import reducers from './redux/reducers/index';
+
 
 // Page imports
 import SamplesPage from './pages/SamplesPages/SamplesPage';
@@ -25,11 +23,7 @@ import PrintersPage from './pages/PrintersPage/PrintersPage';
 import { DeletedSamplesPage } from './pages/DeletedSamplesPage/DeletedSamplesPage';
 import { Team } from './constants';
 import { LabelEditorPage } from './pages/LabelEditorPage/LabelEditorPage';
-
-const store = configureStore({
-    reducer: reducers,
-    middleware: [thunk],
-});
+import { store } from './redux-new';
 
 const router = createBrowserRouter([
     {

@@ -10,7 +10,7 @@ datasource db {
 model Sample {
     // ------------------------------------------------
     // These 6 fields are present on every sample
-    id     String            @id @unique @default(uuid())
+    id              String @id @unique @default(uuid())
     date_created    DateTime @default(now())
     date_modified   DateTime @updatedAt
     expiration_date DateTime @default(dbgenerated("now() + interval '1 day'"))
@@ -49,11 +49,11 @@ model Team {
 
 model TeamField {
     team_name   String
-    name        String // This should map to a key in the data field of the sample with the same team_name
-    displayName String
-    status      Int    // On INSERT, specify 1 to 'create' the field, specify -1 to 'delete' the field, 
-                       // We need this due to the constraint of only being able to use the INSERT operation
-                       // By grouping fields with the same name, and summing the count, we can get the status (is it in use or not) 0 = not in use, 1 = in use
+    name        String  // This should map to a key in the data field of the sample with the same team_name
+    display_name String? // If not provided we will try to interpret from the name field
+    status      Int     // On INSERT, specify 1 to 'create' the field, specify -1 to 'delete' the field, 
+                        // We need this due to the constraint of only being able to use the INSERT operation
+                        // By grouping fields with the same name, and summing the count, we can get the status (is it in use or not) 0 = not in use, 1 = in use
     id         Int    @id @default(autoincrement()) @unique  // The id of the field, need this since we can't use the team_name as the primary key
 
     // This maps to the table name in the database.
@@ -84,9 +84,13 @@ model Deleted {
 }
 
 model Printer {
-    ip       String @id @unique
-    name     String @default("Brother QL-820NWB")
-    location String @default("unknown")
+    ip       String
+    name     String? @default("Brother QL-820NWB")
+    location String? @default("unknown")
+
+    id       Int     @id @default(autoincrement()) @unique
+
+    status   Int
 
     // This maps to the table name in the database.
     // The model is what prisma will use on the client.
@@ -101,8 +105,8 @@ model Printer {
 model Label {
     id           Int    @id @default(autoincrement()) @unique
     team_name    String // The team that the label belongs to
-    label_width  Int    // The width of the label in mm
-    label_length Int    // The length of the label in mm
+    width  Int    // The width of the label in mm
+    length Int    // The length of the label in mm
     data         Json   // The data that will be used to generate the label
 
     // This maps to the table name in the database.

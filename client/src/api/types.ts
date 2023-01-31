@@ -7,7 +7,7 @@ export interface GeneralSample {
     expiration_date: string,
 }
 
-export interface Sample extends GeneralSample {
+export interface OldSample extends GeneralSample {
     experiment_id: string,
     storage_condition: string,
     contents: string,
@@ -26,3 +26,18 @@ export interface Printer {
     location: string,
     model: string
 }
+
+export interface Sample {
+    id: string;
+    audit_id: string;
+    audit_number: number;
+    date_created: Date;
+    date_modified: Date;
+    expiration_date: Date;
+    team_name: string;
+    data: {
+        [key: string]: any;
+    }
+}
+
+export type CreateSampleRequirements = Pick<Sample, "data">
