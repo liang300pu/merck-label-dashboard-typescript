@@ -1,7 +1,21 @@
 import { combineReducers } from "redux";
 
-import samples from './samples'
-import psamples from './psamples'
-import printers from './printers'
+/**
+ * TODO:
+ * 1. Create a reducer for storing all the teams
+ * 2. Create a reducer for storing all the teams fields
+ * 3. Create a reducer for storing all the teams labels
+ * 4. Finish reducer for printers
+ */
 
-export default combineReducers({ samples, printers, psamples });
+import samplesReducer from "./sampleReducer";
+import teamReducer from "./teamReducer";
+
+const reducers = combineReducers({
+    samples: samplesReducer,
+    team: teamReducer
+});
+
+export default reducers;
+
+export type State = ReturnType<typeof reducers>;

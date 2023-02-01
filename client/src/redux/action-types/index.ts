@@ -8,3 +8,7 @@ export enum PrinterActionType {
     FETCH_ALL = "PRINTER_FETCH_ALL",
     CREATE = "PRINTER_CREATE",
 }
+
+export enum TeamActionType {
+    SET_TEAM = "TEAM_SET_TEAM",
+}

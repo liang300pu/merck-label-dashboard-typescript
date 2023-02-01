@@ -7,29 +7,26 @@
  */
 
 import { RequestHandler } from "express";
-import prisma, { STATUS } from "../db";
+import prisma from "../db";
 
 export const getPrinters: RequestHandler = async (req, res) => {
+    const printers = await prisma.printer.findMany();
 
-    const activePrinters = (await prisma.printer.groupBy({
-        by: ["ip"],
-        _max: {
-            id: true
-        },
-        _sum: {
-            status: true
-        }
-    })).filter(printer => printer._sum.status! > 0);
+    res.status(200).json(printers);
+}
 
-    const printers = await prisma.printer.findMany({
+export const getPrinter: RequestHandler = async (req, res) => {
+    const { ip } = req.params;
+
+    const printer = await prisma.printer.findUnique({
         where: {
-            id: {
-                in: activePrinters.map(printer => printer._max.id!)
-            }
+            ip
         }
     });
 
-    res.status(200).json(printers);
+    if (!printer) return res.status(404).json({ message: `Printer "${ip}" not found` });
+
+    res.status(200).json(printer);
 }
 
 export const createPrinter: RequestHandler = async (req, res) => {
@@ -40,7 +37,6 @@ export const createPrinter: RequestHandler = async (req, res) => {
             ip,
             name,
             location,
-            status: STATUS.CREATE
         }
     });
 
@@ -50,89 +46,32 @@ export const createPrinter: RequestHandler = async (req, res) => {
 export const deletePrinter: RequestHandler = async (req, res) => {
     const { ip } = req.params;
 
-    const printers = await prisma.printer.groupBy({
-        by: ["ip"],
+    const printer = await prisma.printer.delete({
         where: {
             ip
-        },
-        _max: {
-            id: true
-        },
-        _sum: {
-            status: true
-        },
-    });
-
-    if (!printers || printers.length == 0)
-        return res.status(404).json({ message: `Printer "${ip}" not found` });
-
-    if (printers[0]._sum.status! == 0)
-        return res.status(404).json({ message: `Printer "${ip}" not found` });
-
-    const printer = await prisma.printer.findUnique({
-        where: {
-            id: printers[0]._max.id!
         }
     });
 
-    await prisma.printer.create({
-        data: {
-            ip,
-            name: printer!.name,
-            location: printer!.location,
-            status: STATUS.DELETE
-        }
-    });
+    if (!printer)
+        return res.status(404).json({ message: `Printer "${ip}" not found` });
 
-    res.status(200).json({ message: `Printer "${ip}" deleted` });
+    res.status(200).json(printer);
 }
 
 export const updatePrinter: RequestHandler = async (req, res) => {
     const { ip } = req.params;
-    const { name, location } = req.body;
+    const { ip: newIP, name, location } = req.body;
 
-    const printers = await prisma.printer.groupBy({
-        by: ["ip"],
+    const printer = await prisma.printer.update({
         where: {
             ip
         },
-        _max: {
-            id: true
-        },
-        _sum: {
-            status: true
-        },
-    });
-
-    if (!printers || printers.length == 0)
-        return res.status(404).json({ message: `Printer "${ip}" not found` });
-
-    if (printers[0]._sum.status! == 0)
-        return res.status(404).json({ message: `Printer "${ip}" not found` });
-
-    const printer = await prisma.printer.findUnique({
-        where: {
-            id: printers[0]._max.id!
-        }
-    });
-
-    await prisma.printer.create({
         data: {
-            ip,
-            name: printer!.name,
-            location: printer!.location,
-            status: STATUS.DELETE
+            ip: newIP,
+            name,
+            location
         }
     });
 
-    await prisma.printer.create({
-        data: {
-            ip,
-            name: name ?? printer!.name,
-            location: location ?? printer!.location,
-            status: STATUS.CREATE
-        }
-    });
-
-    res.status(200).json({ message: `Printer "${ip}" updated` });
+    res.status(200).json(printer);
 }

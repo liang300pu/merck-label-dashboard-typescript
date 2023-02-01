@@ -1,29 +1,10 @@
 import { RequestHandler } from "express";
-import prisma, { STATUS } from "../db";
+import prisma from "../db";
 
 export const getTeams: RequestHandler = async (req, res) => {
-    const teams = await prisma.team.groupBy({
-        by: ["name"],
-        _sum: {
-            status: true
-        },
-        _max: {
-            id: true
-        }
-    });
+    const teams = await prisma.team.findMany();
 
-    const activeTeamsIDs: number[] = teams.filter((team) => team._sum.status! > 0)
-                                          .map((team) => team._max.id) as number[];
-
-    const activeTeams = await prisma.team.findMany({
-        where: {
-            id: {
-                in: activeTeamsIDs
-            }
-        },
-    });
-
-    res.status(200).json(activeTeams);
+    res.status(200).json(teams);
 }
 
 export const createTeam: RequestHandler = async (req, res) => {
@@ -32,7 +13,6 @@ export const createTeam: RequestHandler = async (req, res) => {
     const team = await prisma.team.create({
         data: {
             name,
-            status: STATUS.CREATE
         },
     });
 
@@ -40,57 +20,35 @@ export const createTeam: RequestHandler = async (req, res) => {
 }
 
 export const deleteTeam: RequestHandler = async (req, res) => {
-    const { id } = req.params;
+    const { name } = req.params;
 
-    const team = await prisma.team.findUnique({
+    const team = await prisma.team.delete({
         where: {
-            id: parseInt(id)
+            name
         }
     });
 
     if (!team)
-        return res.status(404).json({ message: `No team with id "${id}" was found` });
-
-    const deleted = await prisma.team.create({
-        data: {
-            name: team.name,
-            status: STATUS.DELETE
-        }
-    });
+        return res.status(404).json({ message: `No team with name "${name}" was found` });
 
     res.status(200).json(team);
 }
 
 export const updateTeam: RequestHandler = async (req, res) => {
-    const { id } = req.params;
+    const { name } = req.params;
+    const { name: newName } = req.body;
 
-    const originalTeam = await prisma.team.findUnique({
+    const team = await prisma.team.update({
         where: {
-            id: parseInt(id)
-        }
-    });
-
-    if (!originalTeam) return res.status(404).json({ message: `No team with id "${id}" was found` });
-
-    const deletedTeam = await prisma.team.create({
+            name
+        },
         data: {
-            name: originalTeam.name,
-            status: STATUS.DELETE
+            name: newName
         }
     });
 
-    const { name } = req.body;
+    if (!team)
+        return res.status(404).json({ message: `No team with name "${name}" was found` });
 
-    const updatedTeam = await prisma.team.create({
-        data: {
-            name,
-            status: STATUS.CREATE
-        }
-    });
-
-    res.status(200).json({
-        original: originalTeam,
-        deleted: deletedTeam,
-        updated: updatedTeam
-    });
+    res.status(200).json(updateTeam);
 }

@@ -10,7 +10,7 @@ datasource db {
 model Sample {
     // ------------------------------------------------
     // These 6 fields are present on every sample
-    id              String @id @unique @default(uuid())
+    id              String   @id @unique @default(uuid())
     date_created    DateTime @default(now())
     date_modified   DateTime @updatedAt
     expiration_date DateTime @default(dbgenerated("now() + interval '1 day'"))
@@ -19,7 +19,8 @@ model Sample {
     // ------------------------------------------------
 
     // The team that the sample belongs to
-    team_name       String   @default("unknown")
+    team            Team     @relation(fields: [team_name], references: [name])
+    team_name       String
 
     // The "unstructured data" of the sample
     data            Json     @default("{}")
@@ -31,15 +32,17 @@ model Sample {
 }
 
 model Team {
-    // The team name is the primary key although not unique
-    name   String 
+    // The team name is the primary key
+    name   String @id @unique
 
     // The team id is unique and autoincremented
-    id     Int    @id @default(autoincrement()) @unique
+    // id     Int    @id @default(autoincrement()) @unique
 
-    status Int // On INSERT, specify 1 to 'create' the team, specify -1 to 'delete' the team, 
-               // We need this due to the constraint of only being able to use the INSERT operation
-               // By grouping teams with the same name, and summing the count, we can get the status (is it in use or not) 0 = not in use, 1 = in use
+    samples Sample[] 
+
+    fields  TeamField[]
+
+    labels  Label[]
 
     // This maps to the table name in the database.
     // The model is what prisma will use on the client.
@@ -48,13 +51,12 @@ model Team {
 }
 
 model TeamField {
-    team_name   String
-    name        String  // This should map to a key in the data field of the sample with the same team_name
+    team         Team    @relation(fields: [team_name], references: [name])
+    team_name    String 
+
+    name         String  @unique // This should map to a key in the data field of the sample with the same team_name
     display_name String? // If not provided we will try to interpret from the name field
-    status      Int     // On INSERT, specify 1 to 'create' the field, specify -1 to 'delete' the field, 
-                        // We need this due to the constraint of only being able to use the INSERT operation
-                        // By grouping fields with the same name, and summing the count, we can get the status (is it in use or not) 0 = not in use, 1 = in use
-    id         Int    @id @default(autoincrement()) @unique  // The id of the field, need this since we can't use the team_name as the primary key
+    id           Int     @id @default(autoincrement()) @unique  // The id of the field, need this since we can't use the team_name as the primary key
 
     // This maps to the table name in the database.
     // The model is what prisma will use on the client.
@@ -65,17 +67,11 @@ model TeamField {
 model Deleted {
     // This is all the information we need to store about a deleted sample
     // With this we get the entire history of the sample
-    audit_id   String
-    team_name  String
+    audit_id     String @id @unique
+    team_name    String
 
     // We need a unique id for each deleted sample
     date_deleted DateTime @default(now()) @unique
-
-    // We can do a similar thing to TeamField if we want to restore the sample in the future
-    // When a sample is deleted, we INSERT the same audit id, with a status of 1.
-    // When a sample is restored, we INSERT the same audit id, with a status of -1.
-    // By grouping the audit ids, and summing the status, we can get the status of the sample (is it deleted or not) 0 = not deleted, 1 = deleted
-    status   Int 
 
     // This maps to the table name in the database.
     // The model is what prisma will use on the client.
@@ -84,18 +80,14 @@ model Deleted {
 }
 
 model Printer {
-    ip       String
+    ip       String  @id @unique
     name     String? @default("Brother QL-820NWB")
     location String? @default("unknown")
-
-    id       Int     @id @default(autoincrement()) @unique
-
-    status   Int
 
     // This maps to the table name in the database.
     // The model is what prisma will use on the client.
     // - i.e. prisma.printer.findMany()
-    @@map("brother_ql_printers")
+    @@map("printers")
 }
 
 // With this setup teams should be able to have multiple labels with different sizes
@@ -103,66 +95,20 @@ model Printer {
 // Group by team_name, then group by label_width and label_length, then max the id
 // - also if provided a label width and length, just group by the team they provided and max id again.
 model Label {
-    id           Int    @id @default(autoincrement()) @unique
-    team_name    String // The team that the label belongs to
-    width  Int    // The width of the label in mm
-    length Int    // The length of the label in mm
-    data         Json   // The data that will be used to generate the label
+    id        Int    @id @default(autoincrement()) @unique
+
+    team      Team   @relation(fields: [team_name], references: [name])
+    team_name String // The team that the label belongs to
+
+    width     Int    // The width of the label in mm
+    length    Int    // The length of the label in mm
+    
+    data      Json   // The data that will be used to generate the label
 
     // This maps to the table name in the database.
     // The model is what prisma will use on the client.
     // - i.e. prisma.label.findMany()
-    @@map("team_label_layouts")
-}
-
-// ------------------------------
-// OLD MODELS BELOW
-// ------------------------------
-
-model samples_old {
-    qr_code_key String @id
-    experiment_id String
-    storage_condition String
-    contents String
-    analyst String
-    date_entered String
-    date_modified String
-    expiration_date String
-    audit_id String @default(uuid())
-    audit_number Int
-}
-
-model psamples {
-    qr_code_key String @id
-    sample_name String
-    mk String
-    eln_notebook_number String
-    date_entered String
-    date_modified String
-    expiration_date String
-    audit_id String @default(uuid())
-    audit_number Int
-}
-
-model printers {
-    ip String @id
-    name String
-    location String
-    model String
-}
-
-model deleted {
-    audit_id String @id
-    audit_number Int
-    qr_code_key String @unique
-    team String
-    date_deleted String
-}
-
-model labels {
-    id Int @id
-    data Json
-    team String
+    @@map("team_labelss")
 }
 
 generator client {

@@ -9,7 +9,7 @@ import teamsRouter from './routes/teams';
 import teamsFieldsRouter from './routes/teams_fields';
 import teamsLabelsRouter from './routes/teams_labels';
 import printersRouter from './routes/printers';
-import { getAllSamples } from './controllers/samples'
+import { getDeletedSamples } from './controllers/samples'
 
 (async function () {
     const app: express.Express = express()
@@ -22,17 +22,17 @@ import { getAllSamples } from './controllers/samples'
     // ----------------------------------------------
     // NEW ROUTES :>)
 
-    app.use('/:team/samples', sampleRouter);
+    app.use('/samples', sampleRouter);
 
-    app.use('/:team/fields', teamsFieldsRouter);
+    app.get('/deleted_samples', getDeletedSamples);
 
-    app.use('/:team/labels', teamsLabelsRouter);
+    app.use('/fields', teamsFieldsRouter);
+
+    app.use('/labels', teamsLabelsRouter);
 
     app.use('/teams', teamsRouter);
 
     app.use('/printers', printersRouter);
-
-    app.get('/samples', getAllSamples);
 
     const server = app.listen(port, () => {
         console.log(`Server is running on port ${port}`)

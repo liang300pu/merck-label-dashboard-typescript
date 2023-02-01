@@ -14,8 +14,8 @@ router.get('/', getTeams);
 
 router.post('/', createTeam);
 
-router.patch('/:id', updateTeam);
+router.patch('/:name', updateTeam);
 
-router.delete('/:id', deleteTeam);
+router.delete('/:name', deleteTeam);
 
 export default router;

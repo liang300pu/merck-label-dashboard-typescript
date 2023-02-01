@@ -1,4 +1,4 @@
-import { PrinterActionType, SampleActionType } from "../action-types";
+import { PrinterActionType, SampleActionType, TeamActionType } from "../action-types";
 import { Sample, Printer } from "../../api/types";
 
 export interface PrinterFetchAllAction {
@@ -37,3 +37,10 @@ export interface SampleCreateAction {
 }
 
 export type SampleAction = FetchTeamsSamplesAction | FetchAllSamplesAction | SampleCreateAction;
+
+export interface SetTeamAction {
+    type: TeamActionType.SET_TEAM;
+    payload: string;
+}
+
+export type TeamAction = SetTeamAction;

@@ -12,11 +12,9 @@ const router = express.Router({
     mergeParams: true
 });
 
-// TODO:
-// Make it so this route has query params for width and length
-router.get('/', getLabels);
+router.get('/:team', getLabels);
 
-router.post('/', createLabel);
+router.post('/:team', createLabel);
 
 // router.delete('/:id', deleteLabel);
 

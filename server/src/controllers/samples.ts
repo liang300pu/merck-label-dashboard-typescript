@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import prisma, { STATUS, teamIsActive } from "../db";
+import prisma, { teamIsActive } from "../db";
 import { Sample } from "@prisma/client";
 
 /**
@@ -18,133 +18,143 @@ import { Sample } from "@prisma/client";
 
 // [x] get history, route: /:team/samples/:id/audit
 
-export const getAllSamples: RequestHandler = async (req, res) => {
+export const getSamples: RequestHandler = async (req, res) => {
+    const { id, team } = req.query as { id?: string, team?: string };
 
-    const deletedAuditIDs = (await prisma.deleted.groupBy({
-        by: ["audit_id"],
-        _sum: {
-            status: true
-        }
-    })).filter((group) => group._sum.status! > 0)
-       .map((group) => group.audit_id!);
+    /* Handles the case where have both an id and team. We get the sample with given id from the given team */
+    if (id !== undefined && team != undefined) {
+        const teamExists = await teamIsActive(team as string);
 
-    const sampleGroups = (await prisma.sample.groupBy({
-        by: ["team_name", "audit_id"],
-        _max: {
-            audit_number: true
-        },
-    })).filter((group) => !deletedAuditIDs.includes(group.audit_id))
-       .map((group) => {
-            return {
-                team_name: group.team_name,
-                audit_id: group.audit_id,
-                audit_number: group._max.audit_number!
+        if (!teamExists)
+            return res.status(404).json({ message: `Team "${team}" not found` });
+    
+        const sample = await prisma.sample.findFirst({
+            where: {
+                id,
+                team_name: team
             }
+        });
+    
+        if (!sample)
+            return res.status(404).json({ message: `Sample "${id}" not found in team "${team}"` });
+    
+        // If this samples audit id is in the deleted table, then it is deleted
+        const isDeleted = await prisma.deleted.findFirst({
+            where: {
+                audit_id: sample.audit_id
+            }
+        });
+    
+        if (isDeleted !== null)
+            return res.status(404).json({ message: `Sample "${id}" not found` });
+    
+        res.status(200).json(sample);
+    } 
+    /** Handles the case where we only have the id. Searches all teams for the sample with the given id */
+    else if (id !== undefined) {
+        const sample = await prisma.sample.findUnique({
+            where: {
+                id: id as string
+            }
+        });
+    
+        if (!sample)
+            return res.status(404).json({ message: `Sample "${id}" not found in any team` });
+    
+        // If this samples audit id is in the deleted table, then it is deleted
+        const isDeleted = await prisma.deleted.findFirst({
+            where: {
+                audit_id: sample.audit_id
+            }
+        });
+    
+        if (isDeleted !== null)
+            return res.status(404).json({ message: `Sample "${id}" not found` });
+    
+        res.status(200).json(sample);
+    } 
+    /** Handles the case where only the team is provided. Gets all the samples for the provided team */
+    else if (team !== undefined) {
+        const teamExists = await teamIsActive(team);
+
+        if (!teamExists) 
+            return res.status(404).json({ message: `Team "${team}" not found` });
+    
+        const deletedAuditIDs = (await prisma.deleted.findMany())
+            .filter((group) => group.team_name === team).map((group) => group.audit_id!);
+    
+        // Now we want to get the newest audit number for each audit id that is not deleted
+        const newestNonDeletedSamples = (await prisma.sample.groupBy({
+            by: ["audit_id"],
+            where: {
+                team_name: team,
+                audit_id: {
+                    notIn: deletedAuditIDs
+                }
+            },
+            _max: {
+                audit_number: true
+            },
+        })).map((group) => { 
+            return { 
+                audit_id: group.audit_id, 
+                audit_number: group._max.audit_number! 
+            }
+        });
+    
+        // Now we can get all the newest versions of samples that arent deleted
+        const samples = await prisma.sample.findMany({
+            where: {
+                OR: newestNonDeletedSamples
+            }
+        });
+    
+        res.status(200).json(samples);
+    } 
+    /** Handles the case where no id or team are provided. Returns all samples grouped by team */
+    else {
+        const deletedAuditIDs = (await prisma.deleted.findMany())
+            .map((group) => group.audit_id!);
+
+        const sampleGroups = (await prisma.sample.groupBy({
+            by: ["team_name", "audit_id"],
+            _max: {
+                audit_number: true
+            },
+        }))
+        .filter((group) => !deletedAuditIDs.includes(group.audit_id))
+        .map((group) => {
+                return {
+                    team_name: group.team_name,
+                    audit_id: group.audit_id,
+                    audit_number: group._max.audit_number!
+                }
+            }
+        );
+
+        const samples = await prisma.sample.findMany({
+            where: {
+                OR: sampleGroups
+            }
+        });
+
+        const groupedByTeam: { [key: string]: Sample[] } = {};
+
+        // If a team has no samples it wont show up in the groupedByTeam object
+        // But we want it to show up as an empty array so we can show the team exists
+        // So we get all teams and initialize their arrays        
+        const teams = await prisma.team.findMany();
+
+        for (const team of teams) {
+            groupedByTeam[team.name] = [];
         }
-    );
 
-    const samples = await prisma.sample.findMany({
-        where: {
-            OR: sampleGroups
-        }
-    });
-
-    const groupedByTeam: { [key: string]: Sample[] } = {};
-
-    for (const sample of samples) {
-        if (groupedByTeam[sample.team_name]) {
+        for (const sample of samples) {
             groupedByTeam[sample.team_name].push(sample);
-        } else {
-            groupedByTeam[sample.team_name] = [sample];
-        }
-    };
+        };
 
-    res.status(200).json(groupedByTeam);
-}
-
-export const getTeamsSamples: RequestHandler = async (req, res) => {
-    const { team } = req.params;
-
-    const teamExists = await teamIsActive(team);
-
-    if (!teamExists) 
-        return res.status(404).json({ message: `Team "${team}" not found` });
-
-    // Our first goal is to get all the audit ids of deleted samples for this team.
-    // This will allow us to filter out the deleted samples later on.
-    // We must also check that the status is > 0 since deleted samples can be restored.
-    const deletedAuditIDs = (await prisma.deleted.groupBy({
-        by: ["audit_id"],
-        where: {
-            team_name: team
-        },
-        _sum: {
-            status: true
-        }
-    })).filter((group) => group._sum.status! > 0)
-       .map((group) => group.audit_id!);
-
-    // Now we want to get the newest audit number for each audit id that is not deleted
-    const newestNonDeletedSamples = (await prisma.sample.groupBy({
-        by: ["audit_id"],
-        where: {
-            team_name: team,
-            audit_id: {
-                notIn: deletedAuditIDs
-            }
-        },
-        _max: {
-            audit_number: true
-        },
-    })).map((group) => { 
-        return { 
-            audit_id: group.audit_id, 
-            audit_number: group._max.audit_number! 
-        }
-    });
-
-    // Now we can get all the newest versions of samples that arent deleted
-    const samples = await prisma.sample.findMany({
-        where: {
-            OR: newestNonDeletedSamples
-        }
-    });
-
-    res.status(200).json(samples);
-}
-
-export const getSample: RequestHandler = async (req, res) => {
-    const { team, id } = req.params;
-
-    const teamExists = await teamIsActive(team);
-
-    if (!teamExists)
-        return res.status(404).json({ message: `Team "${team}" not found` });
-
-    const sample = await prisma.sample.findUnique({
-        where: {
-            id
-        }
-    });
-
-    if (!sample)
-        return res.status(404).json({ message: `Sample "${id}" not found` });
-
-    // If this samples audit id is in the deleted table, then it is deleted
-    const isDeleted = await prisma.deleted.groupBy({
-        by: ["audit_id"],
-        where: {
-            audit_id: sample.audit_id
-        },
-        _sum: {
-            status: true
-        }
-    });
-
-    if (isDeleted.length > 0 && isDeleted[0]._sum.status! == 0)
-        return res.status(404).json({ message: `Sample "${id}" not found` });
-
-    res.status(200).json(sample);
+        res.status(200).json(groupedByTeam);
+    }
 }
 
 export const getAuditTrail: RequestHandler = async (req, res) => {
@@ -180,52 +190,69 @@ export const getAuditTrail: RequestHandler = async (req, res) => {
 }
 
 export const getDeletedSamples: RequestHandler = async (req, res) => {
-    const { team } = req.params;
+    const deletedSamples = (await prisma.deleted.findMany())
+        .map((del) => del.audit_id);
 
-    const teamExists = await teamIsActive(team);
-
-    if (!teamExists)
-        return res.status(404).json({ message: `Team "${team}" not found` });
-
-    const deletedSamples = await prisma.deleted.findMany({
+    const samplesGroups = (await prisma.sample.groupBy({
+        by: ["audit_id"],
         where: {
-            team_name: team
+            audit_id: {
+                in: deletedSamples
+            }
+        },
+        _max: {
+            audit_number: true
+        }
+    })).map((group) => {
+        return {
+            audit_id: group.audit_id,
+            audit_number: group._max.audit_number!
+            }
+    });
+
+    const newestDeletedSamples = await prisma.sample.findMany({
+        where: {
+            OR: samplesGroups
         }
     });
 
-    res.status(200).json(deletedSamples);
+    const teams = await prisma.team.findMany();
+
+    const groupedByTeam: { [key: string]: Sample[] } = {};
+
+    // If a team has no samples it wont show up in the groupedByTeam object
+    // But we want it to show up as an empty array so we can show the team exists
+    // So we get all teams and initialize their arrays
+    for (const team of teams) {
+        groupedByTeam[team.name] = [];
+    }
+
+    for (const sample of newestDeletedSamples) {
+        groupedByTeam[sample.team_name].push(sample);
+    };
+
+    res.status(200).json(groupedByTeam);
 }
 
 export const createSample: RequestHandler = async (req, res) => {
-    const { team } = req.params;
+    const data = req.body;
+
+    const team = data.team_name;
 
     const teamExists = await teamIsActive(team);
 
     if (!teamExists) 
-        return res.status(404).json({ message: `Team "${team}" not found` });
-
-    // There is a possibility here to add validation for the "data" column.
-    // We would get all the active fields for the team and validate the data against that.    
-
-    const data = req.body;
+        return res.status(404).json({ message: `Team "${team}" not found` });   
 
     const sample = await prisma.sample.create({
-        data: {
-            team_name: team,
-            data
-        }
+        data
     });
 
     res.status(201).json(sample);
 }
 
 export const updateSample: RequestHandler = async (req, res) => {
-    const { team, id } = req.params;
-
-    const teamExists = await teamIsActive(team);
-
-    if (!teamExists)
-        return res.status(404).json({ message: `Team "${team}" not found` });
+    const { id } = req.params;
 
     const sample = await prisma.sample.findUnique({
         where: {
@@ -236,17 +263,13 @@ export const updateSample: RequestHandler = async (req, res) => {
     if (!sample)
         return res.status(404).json({ message: `Sample "${id}" not found` });
 
-    const isDeleted = await prisma.deleted.groupBy({
-        by: ["audit_id"],
+    const isDeleted = await prisma.deleted.findFirst({
         where: {
             audit_id: sample.audit_id
-        },
-        _sum: {
-            status: true
         }
     });
 
-    if (isDeleted.length > 0 && isDeleted[0]._sum.status! == 0)
+    if (isDeleted !== null)
         return res.status(404).json({ message: `Sample "${id}" not found` });
 
     const newSampleData = {
@@ -269,12 +292,7 @@ export const updateSample: RequestHandler = async (req, res) => {
 }
 
 export const deleteSample: RequestHandler = async (req, res) => {
-    const { team, id } = req.params;
-
-    const teamExists = await teamIsActive(team);
-
-    if (!teamExists) 
-        return res.status(404).json({ message: `Team "${team}" not found` });
+    const { id } = req.params;
 
     const sample = await prisma.sample.findUnique({
         where: {
@@ -285,24 +303,19 @@ export const deleteSample: RequestHandler = async (req, res) => {
     if (!sample)
         return res.status(404).json({ message: `Sample "${id}" not found` });
 
-    const isDeleted = await prisma.deleted.groupBy({
-        by: ["audit_id"],
+    const isDeleted = await prisma.deleted.findFirst({
         where: {
             audit_id: sample.audit_id
-        },
-        _sum: {
-            status: true
         }
     });
 
-    if (isDeleted.length > 0 && isDeleted[0]._sum.status! == 0)
+    if (isDeleted !== null)
         return res.status(404).json({ message: `Sample "${id}" not found` });
 
     await prisma.deleted.create({
         data: {
             audit_id: sample.audit_id,
-            team_name: team,
-            status: STATUS.CREATE
+            team_name: sample.team_name,
         }
     });
 

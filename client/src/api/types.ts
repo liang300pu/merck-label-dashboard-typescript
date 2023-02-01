@@ -1,32 +1,3 @@
-export interface GeneralSample {
-    qr_code_key: string,
-    audit_id: string,
-    audit_number: number,
-    date_entered: string,
-    date_modified: string,
-    expiration_date: string,
-}
-
-export interface OldSample extends GeneralSample {
-    experiment_id: string,
-    storage_condition: string,
-    contents: string,
-    analyst: string,
-}
-
-export interface PSample extends GeneralSample {
-    sample_name: string,
-    mk: string,
-    eln_notebook_number: string,
-}
-
-export interface Printer {
-    ip: string,
-    name: string,
-    location: string,
-    model: string
-}
-
 export interface Sample {
     id: string;
     audit_id: string;
@@ -40,4 +11,61 @@ export interface Sample {
     }
 }
 
-export type CreateSampleRequirements = Pick<Sample, "data">
+export type CreateSampleRequirements = Partial<Omit<Sample, "data" | "id" | "audit_id" | "audit_number">> 
+                                     & Record<"data", Sample["data"]>
+                                     & Record<"team_name", Sample["team_name"]>;
+export type UpdateSampleRequirements = Partial<Omit<Sample, "data" | "audit_id" | "audit_number">> 
+                                     & Record<"data", Sample["data"]> 
+                                     & Record<"id", Sample["id"]>;
+export type DeleteSampleRequirements = Pick<Sample, "id">;                                     
+
+export interface Team {
+    name: string;
+}
+
+export type CreateTeamRequirements = Pick<Team, "name">;
+export type UpdateTeamRequirements = Pick<Team, "name">;
+export type DeleteTeamRequirements = Pick<Team, "name">;
+
+export interface TeamField {
+    id: number;
+    team_name: string;
+    name: string;
+    display_name: string;
+}
+
+export type CreateTeamFieldRequirements = Pick<TeamField, "team_name" | "name" | "display_name">;
+export type UpdateTeamFieldRequirements = Required<Pick<TeamField, "id" | "name">> & Partial<Pick<TeamField, "display_name">>;
+export type DeleteTeamFieldRequirements = Pick<TeamField, "id">;
+
+export interface TeamLabelEntity {
+    text: string;
+    textSize: number;
+    position: {
+        x: number;
+        y: number;
+    }
+}
+
+export interface TeamLabel {
+    id: number;
+    team_name: string;
+    width: number;
+    length: number;
+    data: TeamLabelEntity[];
+}
+
+export type CreateTeamLabelRequirements = Pick<TeamLabel, "team_name" | "width" | "length" | "data">;
+
+export interface Printer {
+    ip: string,
+    name: string,
+    location: string,
+}
+
+export type CreatePrinterRequirements = Pick<Printer, "ip"> & Partial<Pick<Printer, "name" | "location">>;
+export type UpdatePrinterRequirements = Partial<Pick<Printer, "ip" | "name" | "location">>;
+
+
+
+

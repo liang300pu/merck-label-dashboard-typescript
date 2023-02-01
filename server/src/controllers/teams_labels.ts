@@ -4,15 +4,28 @@ import prisma from "../db";
 export const getLabels: RequestHandler = async (req, res) => {
     const { team } = req.params;
 
+    const { width, length } = req.query;
+
+    const whereQuery: any = {
+        team_name: team
+    };
+
+    if (width && length) {
+        whereQuery.width = Number(width);
+        whereQuery.length = Number(length);
+    }
+
     const labelGroups = await prisma.label.groupBy({
         by: ["team_name", "width", "length"],
-        where: {
-            team_name: team
-        },
+        where: whereQuery,
         _max: {
             id: true
         }
     });
+
+    if (labelGroups.length == 0) {
+        return res.status(404).json({ message: `No labels found for team "${team}"` });
+    }
 
     const labels = await prisma.label.findMany({
         where: {
@@ -22,7 +35,7 @@ export const getLabels: RequestHandler = async (req, res) => {
         }
     });
 
-    res.status(200).json(labels);
+    res.status(200).json((width && length) ? labels[0] : labels);
 }
 
 export const createLabel: RequestHandler = async (req, res) => {

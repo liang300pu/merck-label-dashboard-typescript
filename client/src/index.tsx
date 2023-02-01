@@ -8,22 +8,70 @@ import {
 
 // Redux imports
 import { Provider } from 'react-redux';
-
+import { store } from './redux';
 
 // Page imports
-import SamplesPage from './pages/SamplesPages/SamplesPage';
-import RootPage from './pages/RootPage/RootPage';
-import CreateSamplePage from './pages/CreateSamplePages/CreateSamplePage';
-import AuditTable from './components/AuditTable/AuditTable';
-import PSamplesPage from './pages/SamplesPages/PSamplesPage';
-import PCreateSamplePage from './pages/CreateSamplePages/PCreateSamplePage';
+// import SamplesPage from './pages/SamplesPages/SamplesPage';
+// import RootPage from './pages/RootPage/RootPage';
+// import CreateSamplePage from './pages/CreateSamplePages/CreateSamplePage';
+// import PSamplesPage from './pages/SamplesPages/PSamplesPage';
+// import PCreateSamplePage from './pages/CreateSamplePages/PCreateSamplePage';
+// import PrintersPage from './pages/PrintersPage/PrintersPage';
+// import { DeletedSamplesPage } from './pages/DeletedSamplesPage/DeletedSamplesPage';
+// import { LabelEditorPage } from './pages/LabelEditorPage/LabelEditorPage';
 
+// MUI imports
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import PrintersPage from './pages/PrintersPage/PrintersPage';
-import { DeletedSamplesPage } from './pages/DeletedSamplesPage/DeletedSamplesPage';
-import { Team } from './constants';
-import { LabelEditorPage } from './pages/LabelEditorPage/LabelEditorPage';
-import { store } from './redux-new';
+
+// const router = createBrowserRouter([
+//     {
+//         path: "/",
+//         element: <RootPage />,
+//     },
+//     {
+//         path: "/printers",
+//         element: <PrintersPage />,
+//     },
+//     {
+//         path: "/editor",
+//         element: <LabelEditorPage />,
+//     },
+//     {
+//         path: "/samples",
+//         element: <SamplesPage />,
+//     },
+
+//     {
+//         path: "/samples/create",
+//         element: <CreateSamplePage />,
+//     },
+//     {
+//         path: "samples/deleted",
+//         element: <DeletedSamplesPage team={"ARND"} />,
+//     },
+//     {
+//         path: "/samples/audit/:id",
+//         element: <AuditTable team={"ARND"} />
+//     },
+//     {
+//         path: "/psamples",
+//         element: <PSamplesPage />,
+//     },
+//     {
+//         path: "/psamples/create",
+//         element: <PCreateSamplePage />,
+//     },
+//     {
+//         path: "psamples/deleted",
+//         element: <DeletedSamplesPage team={"PSCS"} />,
+//     },
+//     {
+//         path: "/psamples/audit/:id",
+//         element: <AuditTable team={"PSCS"} />
+//     }
+// ]);
+
+import RootPage from "./pages/RootPage";
 
 const router = createBrowserRouter([
     {
@@ -31,47 +79,11 @@ const router = createBrowserRouter([
         element: <RootPage />,
     },
     {
-        path: "/printers",
-        element: <PrintersPage />,
-    },
-    {
-        path: "/editor",
-        element: <LabelEditorPage />,
-    },
-    {
-        path: "/samples",
-        element: <SamplesPage />,
-    },
-
-    {
-        path: "/samples/create",
-        element: <CreateSamplePage />,
-    },
-    {
-        path: "samples/deleted",
-        element: <DeletedSamplesPage team={Team.ARND} />,
-    },
-    {
-        path: "/samples/audit/:id",
-        element: <AuditTable team={Team.ARND} />
-    },
-    {
-        path: "/psamples",
-        element: <PSamplesPage />,
-    },
-    {
-        path: "/psamples/create",
-        element: <PCreateSamplePage />,
-    },
-    {
-        path: "psamples/deleted",
-        element: <DeletedSamplesPage team={Team.PSCS} />,
-    },
-    {
-        path: "/psamples/audit/:id",
-        element: <AuditTable team={Team.PSCS} />
+        path: "/samples/:team",
+        element: <div />,
     }
 ]);
+
 
 const theme = createTheme({
     palette: {

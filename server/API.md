@@ -15,16 +15,30 @@
 }
 ```
 
-## `GET` /:team/samples
-## `GET` /:team/samples/:id
-## `GET` /:team/samples/:id/audit
 ## `GET` /samples
+- Get all samples grouped by team
+## `GET` /samples/?id=
+- Query all samples and find the one with `id`
+## `GET` /samples/?team_name=
+- Query all samples and find the ones with `team_name`
+## `GET` /samples/?id=&team_name=
+- Query all samples and find the one with `id` and `team_name`
+## `GET` /samples/:id/audit 
+- Get the audit history of a sample with `id`
 
-## `POST` /:team/samples
+## `GET` /deleted_samples
+- Get all deleted samples grouped by team
 
-## `PATCH` /:team/samples/:id
+## `POST` /samples
+- Create a sample
+    - Must provide `team_name` and `data`
 
-## `DELETE` /:team/samples/:id
+## `PATCH` /samples/:id
+- Update a sample with `id`
+    - Must `data`
+
+## `DELETE` /samples/:id
+- Delete a sample with `id`
 
 ---
 
@@ -32,19 +46,23 @@
 ## Relevant Types
 ```json
 {
-    "id": Int,
     "name": String,
-    "status": Int
 }
 ```
 
 ## `GET` /teams
+- Get all teams
 
 ## `POST` /teams
+- Create a team
+    - Must provide `name`
 
-## `PATCH` /teams/:id
+## `PATCH` /teams/:name
+- Update a team name
+    - Must provide `name`
 
-## `DELETE` /teams/:id
+## `DELETE` /teams/:name
+- Delete a team with `name`
 
 ---
 
@@ -56,19 +74,31 @@
     "team_name": String,
     "name": String,
     "display_name": String,
-    "status": Int
 }
 ```
 
-## `GET` /:team/fields
+## `GET` /fields
+- Get all fields
+    - TODO MAKE SURE I GROUP BY TEAM NAME
 
-## `GET` /:team/fields/:id
+## `GET` /fields/:team
+- Get all fields for a `team`
 
-## `POST` /:team/fields
+## `GET` /fields/:team/:id
+- Get a field for a `team` with `id`
 
-## `PATCH` /:team/fields/:id
+## `POST` /fields
+- Create a field
+    - Must provide `team_name`, `name`
+    - Optional `display_name`
 
-## `DELETE` /:team/fields/:id
+## `PATCH` /fields/:id
+- Update a field with `id`
+    - Must provide `name`
+    - Optional `team_name`, `display_name`
+
+## `DELETE` /fields/:id
+- Delete a field with `id`
 
 ---
 
@@ -84,9 +114,15 @@
 }
 ```
 
-## `GET` /:team/labels
+## `GET` /labels/:team
+- Get all labels for a `team`
+
+## `GET` /labels/:team/?width=&length=
+- Get label for a `team` with `width` and `length`
 
 ## `POST` /:team/labels
+- Create a label for a `team`
+    - Must provide `width`, `length`, `data`
 
 ---
 
@@ -94,21 +130,29 @@
 ## Relevant Types
 ```json
 {
-    "id": Int,
     "ip": String,
     "name": String,
     "location": String,
-    "status": Int
 }
 ```
 
 ## `GET` /printers
+- Get all printers
+
+## `GET` /printers/:ip 
+- Get a printer with `ip`
 
 ## `POST` /printers
+- Create a printer
+    - Must provide `ip`
+    - Optional `name`, `location`
 
 ## `DELETE` /printers/:ip
+- Delete a printer with `ip`
 
 ## `PATCH` /printers/:ip
+- Update a printer with `ip`
+    - Optional `ip`, `name`, `location`
 
 ---
 

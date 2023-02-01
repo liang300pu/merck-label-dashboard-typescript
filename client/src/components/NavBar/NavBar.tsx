@@ -53,99 +53,6 @@ const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWith
                         </ListItemButton>
                     </ListItem>
                 </List>
-
-                <Divider />
-                
-                <List>
-                    <ListItem key={"arnd-header"}>
-                        <Typography variant="h5" align="center" color="primary" component="div">
-                            AR&D Team
-                        </Typography>
-                    </ListItem>
-                    <ListItem key={"samples-table"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/samples" className="link-button">
-                                <ListItemIcon>
-                                    <PageviewIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        View Samples
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key={"samples-form"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/samples/create" className="link-button">
-                                <ListItemIcon>
-                                    <CreateIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        Create Sample
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key={"samples-deleted"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/samples/deleted" className="link-button">
-                                <ListItemIcon>
-                                    <TrashIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        View Deleted Samples
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
-                </List>
-
-                <Divider />
-
-                <List>
-                    <ListItem key={"pcsc-header"}>
-                        <Typography variant="h5" align="center" color="primary" component="div">
-                            PCSC Team
-                        </Typography>
-                    </ListItem>
-                    <ListItem key={"psamples-table"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/psamples" className="link-button">
-                                <ListItemIcon>
-                                    <PageviewIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        View Samples
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key={"psamples-form"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/psamples/create" className="link-button">
-                                <ListItemIcon>
-                                    <CreateIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        Create Sample
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key={"psamples-deleted"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/psamples/deleted" className="link-button">
-                                <ListItemIcon>
-                                    <TrashIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        View Deleted Samples
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
-                </List>
-
             </Box>
         )
     }
@@ -178,19 +85,16 @@ const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWith
                             Merck Label Dashboard
                         </Typography>
 
-                        <div className="msg-image-container">
+                        {/* Merck branding forbids using merck logo for "non-merck" work */}
+                        {/* <div className="msg-image-container">
                         <Link to="/">
                             <img src={msdlogo} alt="MSD Logo" height="60"/>
                         </Link>
-                        </div>
+                        </div> */}
+                        {children}
                     </Toolbar>
                 </AppBar>
             </Box>
-            <Grow>
-                <Container>
-                    {children}
-                </Container>
-            </Grow>
         </Container>
     )
 }

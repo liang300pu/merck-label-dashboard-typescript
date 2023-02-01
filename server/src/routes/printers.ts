@@ -1,6 +1,7 @@
 import express from "express";
 import { 
     getPrinters,
+    getPrinter,
     createPrinter,
     deletePrinter,
     updatePrinter,
@@ -12,6 +13,8 @@ const router = express.Router({
 });
 
 router.get('/', getPrinters);
+
+router.get('/:ip', getPrinter);
 
 router.post('/', createPrinter);
 
