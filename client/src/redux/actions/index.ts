@@ -1,5 +1,19 @@
-import { PrinterActionType, SampleActionType, TeamActionType } from "../action-types";
-import { Sample, Printer } from "../../api/types";
+import { 
+    FieldsActionType,
+    PrinterActionType, 
+    SampleActionType, 
+    TeamActionType, 
+    TeamsActionType,
+    LabelsActionType
+} from "../action-types";
+
+import { 
+    Sample, 
+    Printer, 
+    Team, 
+    TeamField,
+    TeamLabel
+} from "../../api/types";
 
 export interface PrinterFetchAllAction {
     type: PrinterActionType.FETCH_ALL;
@@ -11,7 +25,12 @@ export interface PrinterCreateAction {
     payload: Printer;
 }
 
-export type PrinterAction = PrinterFetchAllAction | PrinterCreateAction;
+export interface PrinterUpdateAction {
+    type: PrinterActionType.UPDATE;
+    payload: Printer;
+}
+
+export type PrinterAction = PrinterFetchAllAction | PrinterCreateAction | PrinterUpdateAction;
 
 export interface FetchTeamsSamplesAction {
     type: SampleActionType.FETCH_TEAM;
@@ -44,3 +63,62 @@ export interface SetTeamAction {
 }
 
 export type TeamAction = SetTeamAction;
+
+export interface FetchAllTeamsAction {
+    type: TeamsActionType.FETCH_ALL;
+    payload: Team[];
+}
+
+export interface CreateTeamAction {
+    type: TeamsActionType.CREATE;
+    payload: Team;
+}
+
+export type TeamsAction = FetchAllTeamsAction | CreateTeamAction;
+
+export interface FetchAllFieldsAction {
+    type: FieldsActionType.FETCH_ALL;
+    payload: {
+        [key: string]: TeamField[];
+    };
+}
+
+export interface FetchTeamsFieldsAction {
+    type: FieldsActionType.FETCH_TEAM;
+    payload: {
+        team: string;
+        fields: TeamField[];
+    };
+}
+
+export interface CreateFieldAction {
+    type: FieldsActionType.CREATE;
+    payload: TeamField;
+}
+
+export interface UpdateFieldAction {
+    type: FieldsActionType.UPDATE;
+    payload: TeamField;
+}
+
+export type FieldAction = FetchAllFieldsAction | FetchTeamsFieldsAction | CreateFieldAction | UpdateFieldAction;
+
+export interface FetchAllLabelsAction {
+    type: LabelsActionType.FETCH_ALL;
+    payload: Record<string, TeamLabel[]>;
+}
+
+export interface FetchTeamsLabelsAction {
+    type: LabelsActionType.FETCH_TEAM;
+    payload: {
+        team: string;
+        labels: TeamLabel[];
+    };
+}
+
+export interface CreateLabelAction {
+    type: LabelsActionType.CREATE;
+    payload: TeamLabel;
+}
+
+export type LabelAction = FetchAllLabelsAction | FetchTeamsLabelsAction | CreateLabelAction;

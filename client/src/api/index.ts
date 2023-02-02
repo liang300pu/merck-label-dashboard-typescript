@@ -12,16 +12,17 @@ import {
     CreateTeamLabelRequirements,
     Printer,
     CreatePrinterRequirements,
-    UpdatePrinterRequirements, 
+    UpdatePrinterRequirements,
+    UpdateTeamFieldRequirements, 
 } from './types';
 
 const baseURL = 'http://localhost:5000' as const;
 
 const baseSamplesURL = `${baseURL}/samples/` as const;
-const baseTeamsURL = `${baseURL}/teams/` as const;
-const basePrintersURL = `${baseURL}/printers/` as const;
-const baseFieldsURL = `${baseURL}/fields/` as const;
-const baseLabelsURL = `${baseURL}/labels/` as const;
+const baseTeamsURL = `${baseURL}/teams` as const;
+const basePrintersURL = `${baseURL}/printers` as const;
+const baseFieldsURL = `${baseURL}/fields` as const;
+const baseLabelsURL = `${baseURL}/labels` as const;
 
 
 // * @route /teams
@@ -50,7 +51,7 @@ async function createTeam(info: CreateTeamRequirements): Promise<Team> {
  * @returns The updated team
  */
 async function updateTeam(team_name: string, team: UpdateTeamRequirements): Promise<Team> {
-    const { data: updatedTeam } = await axios.put(`${baseTeamsURL}/${team_name}`, team);
+    const { data: updatedTeam } = await axios.patch(`${baseTeamsURL}/${team_name}`, team);
     return updatedTeam;
 }
 
@@ -117,7 +118,7 @@ async function createSample(sample: CreateSampleRequirements): Promise<Sample> {
 }
 
 async function updateSample(id: string, sample: UpdateSampleRequirements): Promise<Sample> {
-    const { data: updatedSample } = await axios.put(`${baseSamplesURL}/${id}`, sample);
+    const { data: updatedSample } = await axios.patch(`${baseSamplesURL}/${id}`, sample);
     return updatedSample;
 }
 
@@ -150,8 +151,8 @@ async function createTeamField(field: CreateTeamFieldRequirements): Promise<Team
     return newField;
 }
 
-async function updateTeamField(field_id: number | string, field: TeamField): Promise<TeamField> {
-    const { data: updatedField } = await axios.put(`${baseFieldsURL}/${field_id}`, field);
+async function updateTeamField(field_id: number | string, field: UpdateTeamFieldRequirements): Promise<TeamField> {
+    const { data: updatedField } = await axios.patch(`${baseFieldsURL}/${field_id}`, field);
     return updatedField;
 }
 
@@ -164,7 +165,12 @@ async function deleteTeamField(field_id: number | string): Promise<TeamField> {
 
 // * @route /:team/labels
 
-async function getTeamLabels(team: string): Promise<TeamLabel> {
+async function getAllLabels(): Promise<Record<string, TeamLabel[]>> {
+    const { data: labels } = await axios.get(baseLabelsURL);
+    return labels;
+}
+
+async function getTeamLabels(team: string): Promise<TeamLabel[]> {
     const { data: labels } = await axios.get(`${baseLabelsURL}/${team}`);
     return labels;
 }
@@ -207,7 +213,7 @@ async function createPrinter(printer: CreatePrinterRequirements): Promise<Printe
 }
 
 async function updatePrinter(ip: string, printer: UpdatePrinterRequirements): Promise<Printer> {
-    const { data: updatedPrinter } = await axios.put(`${basePrintersURL}/${ip}`, printer);
+    const { data: updatedPrinter } = await axios.patch(`${basePrintersURL}/${ip}`, printer);
     return updatedPrinter;
 }
 
@@ -222,6 +228,7 @@ export {
     updateTeam,
     deleteTeam,
     getAllSamples,
+    getSample,
     getTeamSamples,
     getTeamSample,
     getAuditSamples,
@@ -230,9 +237,12 @@ export {
     deleteSample,
     getTeamFields,
     getTeamField,
+    getAllFields,
     createTeamField,
     updateTeamField,
     deleteTeamField,
+    getAllLabels,
+    getTeamLabel,
     getTeamLabels,
     createTeamLabel,
     getAllPrinters,
@@ -243,36 +253,3 @@ export {
 }
 
 export * from './types';
-
-
-// TODO: Replace any with proper types
-
-// const samplesURL = `${baseURL}/arnd_samples`
-
-// export const fetchSamples = () => axios.get(samplesURL)
-// export const createSample = (newSampleData: any) => axios.post(samplesURL, newSampleData)
-// export const updateSample = (newSapleDate: any) => axios.put(samplesURL, newSapleDate)
-
-// const psamplesURL = `${baseURL}/pscs_samples`
-
-// export const fetchPSamples = () => axios.get(psamplesURL)
-// export const createPSample = (newSampleData: any) => axios.post(psamplesURL, newSampleData)
-// export const updatePSample = (newSapleDate: any) => axios.put(psamplesURL, newSapleDate)
-
-// const qrURL = `${baseURL}/qr`
-
-// export const createQRCodeKey = (sample: any) => axios.post(`${qrURL}/key`, sample)
-// export const createLabel = (sample: any, team: "ARND" | "PSCS") => axios.post(`${qrURL}/label/${team}`, sample)
-
-// export const fetchPrinters = () => axios.get(`${qrURL}/printers`)
-// export const printLabels = (base64labels: string[], printer: Printer) => axios.post(`${qrURL}/print`, { base64labels, printer })
-
-// const deletedURL = `${baseURL}/deleted`;
-
-// export const fetchDeleted = () => axios.get(deletedURL);
-// export const fetchDeletedByTeam = (team: "ARND" | "PSCS") => axios.get(`${deletedURL}/${team}`)
-// export const createDeleted = (deleted: any) => axios.post(deletedURL, deleted);
-
-// const labelsURL = `${baseURL}/labels`;
-
-// export const setLabelDesign = (information: any, type: string) => axios.post(labelsURL, { information, team: type });

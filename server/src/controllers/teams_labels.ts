@@ -1,5 +1,20 @@
 import { RequestHandler } from "express";
 import prisma from "../db";
+import { Label } from "@prisma/client";
+
+export const getAllLabels: RequestHandler = async (req, res) => {
+    const labels = await prisma.label.findMany();
+
+    const teams = (await prisma.team.findMany()).map((team) => team.name);
+
+    const groupedByTeam: Record<string, Label[]> = {};
+
+    for (const team of teams) {
+        groupedByTeam[team] = labels.filter((label) => label.team_name == team);
+    }
+
+    res.status(200).json(labels);
+}
 
 export const getLabels: RequestHandler = async (req, res) => {
     const { team } = req.params;

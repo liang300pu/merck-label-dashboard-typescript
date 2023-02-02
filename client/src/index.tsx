@@ -72,6 +72,9 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 // ]);
 
 import RootPage from "./pages/RootPage";
+import EditTeamFieldsPage from "./pages/EditTeamFieldsPage";
+import ViewSamplesPage from './pages/ViewSamplesPage';
+import CreateSamplePage from './pages/CreateSamplePage';
 
 const router = createBrowserRouter([
     {
@@ -79,8 +82,16 @@ const router = createBrowserRouter([
         element: <RootPage />,
     },
     {
-        path: "/samples/:team",
-        element: <div />,
+        path: "/fields",
+        element: <EditTeamFieldsPage />
+    },
+    {
+        path: "/samples",
+        element: <ViewSamplesPage />,
+    },
+    {
+        path: "/samples/create",
+        element: <CreateSamplePage />,
     }
 ]);
 

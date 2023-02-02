@@ -54,7 +54,8 @@ model TeamField {
     team         Team    @relation(fields: [team_name], references: [name])
     team_name    String 
 
-    name         String  @unique // This should map to a key in the data field of the sample with the same team_name
+                         // @unique was causing some issues on frontend
+    name         String  // @unique // This should map to a key in the data field of the sample with the same team_name
     display_name String? // If not provided we will try to interpret from the name field
     id           Int     @id @default(autoincrement()) @unique  // The id of the field, need this since we can't use the team_name as the primary key
 

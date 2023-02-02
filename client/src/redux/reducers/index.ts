@@ -2,20 +2,34 @@ import { combineReducers } from "redux";
 
 /**
  * TODO:
- * 1. Create a reducer for storing all the teams
- * 2. Create a reducer for storing all the teams fields
- * 3. Create a reducer for storing all the teams labels
- * 4. Finish reducer for printers
+ * [x] 1. Create a reducer for storing all the teams
+ * [x] 2. Create a reducer for storing all the teams fields
+ * [x] 3. Create a reducer for storing all the teams labels
+ * [x] 4. Finish reducer for printers
  */
 
 import samplesReducer from "./sampleReducer";
 import teamReducer from "./teamReducer";
+import teamsReducer from "./teamsReducer";
+import printersReducer from "./printerReducer";
+import fieldsReducer from "./fieldsReducer";
+import labelsReducer from "./labelsReducer"
 
 const reducers = combineReducers({
+    printers: printersReducer,
     samples: samplesReducer,
-    team: teamReducer
+    team: teamReducer,
+    teams: teamsReducer,
+    fields: fieldsReducer,
+    labels: labelsReducer
 });
 
 export default reducers;
+
+export type SampleState = ReturnType<typeof samplesReducer>;
+export type TeamState = ReturnType<typeof teamReducer>;
+export type PrinterState = ReturnType<typeof printersReducer>;
+export type TeamsState = ReturnType<typeof teamsReducer>;
+export type FieldsState = ReturnType<typeof fieldsReducer>;
 
 export type State = ReturnType<typeof reducers>;

@@ -1,15 +1,22 @@
 import { RequestHandler } from "express";
 import prisma from "../db";
+import { TeamField } from "@prisma/client";
 
 // TODO: 
 // - Possibly add a route that returns all fields grouped by team.
 
 export const getAllTeamsFields: RequestHandler = async (req, res) => {
-    const fields = await prisma.teamField.groupBy({
-        by: ['team_name'],
-    });
+    const fields = await prisma.teamField.findMany();
 
-    res.status(200).json(fields);
+    const teams = await prisma.team.findMany();
+
+    const fieldsGroupedByTeam: Record<string, TeamField[]> = {};
+
+    for (const team of teams) {
+        fieldsGroupedByTeam[team.name] = fields.filter(field => field.team_name === team.name);
+    }
+
+    res.status(200).json(fieldsGroupedByTeam);
 }
 
 /**

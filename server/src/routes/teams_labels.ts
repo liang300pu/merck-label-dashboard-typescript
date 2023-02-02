@@ -5,12 +5,15 @@ import express from 'express'
 import { 
     getLabels,
     createLabel,
+    getAllLabels,
     // deleteLabel,
 } from '../controllers/teams_labels';
 
 const router = express.Router({
     mergeParams: true
 });
+
+router.get('/', getAllLabels);
 
 router.get('/:team', getLabels);
 

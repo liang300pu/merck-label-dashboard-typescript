@@ -1,19 +1,20 @@
+import { DateTime } from "luxon";
+
 export interface Sample {
     id: string;
     audit_id: string;
     audit_number: number;
-    date_created: Date;
-    date_modified: Date;
-    expiration_date: Date;
+    date_created: DateTime;
+    date_modified: DateTime;
+    expiration_date: DateTime;
     team_name: string;
     data: {
         [key: string]: any;
     }
 }
 
-export type CreateSampleRequirements = Partial<Omit<Sample, "data" | "id" | "audit_id" | "audit_number">> 
+export type CreateSampleRequirements = Partial<Omit<Sample, "data" | "id" | "audit_id" | "audit_number" | "team_name">> 
                                      & Record<"data", Sample["data"]>
-                                     & Record<"team_name", Sample["team_name"]>;
 export type UpdateSampleRequirements = Partial<Omit<Sample, "data" | "audit_id" | "audit_number">> 
                                      & Record<"data", Sample["data"]> 
                                      & Record<"id", Sample["id"]>;
@@ -35,7 +36,7 @@ export interface TeamField {
 }
 
 export type CreateTeamFieldRequirements = Pick<TeamField, "team_name" | "name" | "display_name">;
-export type UpdateTeamFieldRequirements = Required<Pick<TeamField, "id" | "name">> & Partial<Pick<TeamField, "display_name">>;
+export type UpdateTeamFieldRequirements = Required<Pick<TeamField, "id" | "name">> & Partial<Pick<TeamField, "display_name" | "team_name">>;
 export type DeleteTeamFieldRequirements = Pick<TeamField, "id">;
 
 export interface TeamLabelEntity {

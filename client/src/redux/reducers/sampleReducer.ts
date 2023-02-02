@@ -2,7 +2,7 @@ import { SampleAction } from "../actions";
 import { SampleActionType } from "../action-types";
 import { Sample } from "../../api/types";
 
-const reducer = (state: { [key: string]: Sample[] } = {}, action: SampleAction): { [key: string]: Sample[] } => {
+const reducer = (state: Record<string, Sample[]> = {}, action: SampleAction): { [key: string]: Sample[] } => {
 
     switch (action.type) {
         case SampleActionType.FETCH_ALL:
