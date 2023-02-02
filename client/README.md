@@ -13,8 +13,11 @@ Its main use case is being able to convert from the dates that prisma likes (ISO
 - ### Components
 
 # Todo
-- [ ] Deleting samples is buggin  
+- [x] Deleting samples is buggin  
     - Make api endpoint to delete multiple samples
 - [ ] Add a way to view deleted samples as well as the audit trail of a sample
 - [ ] Add back label generation and make sure the label api is working properly
+    - [ ] WHen you generate labels have a popup panel that shows the labels that are being generated
+          where you can pick from all the sizes of labels that team has as well as the number of labels.
+          And pick your printer
 - [ ] Highlight expired samples

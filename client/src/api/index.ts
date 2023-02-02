@@ -18,7 +18,8 @@ import {
 
 const baseURL = 'http://localhost:5000' as const;
 
-const baseSamplesURL = `${baseURL}/samples/` as const;
+const baseSamplesURL = `${baseURL}/samples` as const;
+const baseDeletedSamplesURL = `${baseURL}/deleted_samples` as const;
 const baseTeamsURL = `${baseURL}/teams` as const;
 const basePrintersURL = `${baseURL}/printers` as const;
 const baseFieldsURL = `${baseURL}/fields` as const;
@@ -80,7 +81,7 @@ async function getAllSamples(): Promise<Record<string, Sample[]>> {
 }
 
 async function getSample(id: string): Promise<Sample> {
-    const { data: sample } = await axios.get(`${baseSamplesURL}`, {
+    const { data: sample } = await axios.get(`${baseSamplesURL}/`, {
         params: {
             id
         }
@@ -125,6 +126,20 @@ async function updateSample(id: string, sample: UpdateSampleRequirements): Promi
 async function deleteSample(id: string): Promise<Sample> {
     const { data: deletedSample } = await axios.delete(`${baseSamplesURL}/${id}`);
     return deletedSample;
+}
+
+async function deleteSamples(ids: string[]): Promise<Sample[]> {
+    const { data: deletedSamples } = await axios.delete(`${baseSamplesURL}`, {
+        data: {
+            ids
+        }
+    });
+    return deletedSamples;
+}
+
+async function getAllDeletedSamples(): Promise<Record<string, Sample[]>> {
+    const { data: samples } = await axios.get(`${baseDeletedSamplesURL}`);
+    return samples;
 }
 
 // ----------------------------------------
@@ -232,9 +247,11 @@ export {
     getTeamSamples,
     getTeamSample,
     getAuditSamples,
+    getAllDeletedSamples,
     createSample,
     updateSample,
     deleteSample,
+    deleteSamples,
     getTeamFields,
     getTeamField,
     getAllFields,

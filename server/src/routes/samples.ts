@@ -6,6 +6,7 @@ import {
     getDeletedSamples,
     updateSample,
     getAuditTrail,
+    deleteSamples,
 } from "../controllers/samples";
 
 /**
@@ -20,6 +21,7 @@ router.post("/", createSample);
 
 router.patch("/:id", updateSample)
 router.delete("/:id", deleteSample);
+router.delete("/", deleteSamples);
 
 // Dillema: Should id be the sample id or the audit id?
 // For now it will be sample id.

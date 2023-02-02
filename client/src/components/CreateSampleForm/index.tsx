@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { State, useActionCreators } from "../../redux";
-import { Button, Paper, Snackbar, TextField } from "@mui/material";
+import { Alert, Button, Paper, Snackbar, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { TeamField } from "../../api";
 import { DateTime } from "luxon";
@@ -51,10 +51,15 @@ const CreateSampleForm: React.FC = () => {
     const [allFields, setAllFields] = useState<FieldsType[]>(requiredDateFields);
     const [newSampleData, setNewSampleData] = useState<NewSampleDataType>(defaultSampleData);
 
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+
     const clearSampleData = () => {
         const data = {};
         for (const field of fields[team] ?? []) {
-            data[field.name] = "";
+            if (field.name.includes("date"))
+                data[field.name] = DateTime.now();
+            else 
+                data[field.name] = "";
         }
         setNewSampleData({
             ...defaultSampleData,
@@ -84,7 +89,10 @@ const CreateSampleForm: React.FC = () => {
                 ...newSampleData,
                 data: {
                     ...newSampleData.data,
-                    [field.name]: event.target.value
+                    [field.name]: 
+                        field.name.includes("date") 
+                        ? DateTime.fromFormat(event.target.value, "yyyy-MM-dd")
+                        : event.target.value
                 }
             });
         }
@@ -96,6 +104,7 @@ const CreateSampleForm: React.FC = () => {
 
     const onSubmitButtonClick = () => {
         createSample(team, newSampleData);
+        setShowSuccessAlert(true);
         clearSampleData();
     }
 
@@ -107,10 +116,19 @@ const CreateSampleForm: React.FC = () => {
 
     return (
         <>
-            {/* <Snackbar>
-
-                
-            </Snackbar> */}
+            <Snackbar 
+                open={showSuccessAlert} 
+                autoHideDuration={3000} 
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                onClose={() => setShowSuccessAlert(false)}
+            >
+                <Alert 
+                    severity="success"
+                    onClose={() => setShowSuccessAlert(false)}
+                >
+                    Sample successfully created
+                </Alert>
+            </Snackbar>
             <Paper className="sample-form-paper">
                 <form className="sample-form" autoComplete="off">
                     {
@@ -122,11 +140,17 @@ const CreateSampleForm: React.FC = () => {
                                 margin="normal"
                                 key={index}
                                 label={field.display_name}
+                                // Very hacky way to determine if it's a date field
+                                // Proper way would be to have a field type
                                 type={field.name.includes("date") ? "date" : "text"}
                                 value={
                                     newSampleData.hasOwnProperty(field.name)
                                     ? (newSampleData[field.name] as DateTime).toFormat("yyyy-MM-dd")
-                                    : newSampleData.data[field.name] ?? ""
+                                    : (
+                                        field.name.includes("date")
+                                        ? (newSampleData.data[field.name] as DateTime).toFormat("yyyy-MM-dd") ?? DateTime.now().toFormat("yyyy-MM-dd")
+                                        : (newSampleData.data[field.name] ?? "")
+                                    )
                                 }
                                 onChange={(event) => onTextFieldChange(event, field)}
                                 fullWidth

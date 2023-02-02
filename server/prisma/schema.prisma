@@ -35,9 +35,6 @@ model Team {
     // The team name is the primary key
     name   String @id @unique
 
-    // The team id is unique and autoincremented
-    // id     Int    @id @default(autoincrement()) @unique
-
     samples Sample[] 
 
     fields  TeamField[]
@@ -72,7 +69,7 @@ model Deleted {
     team_name    String
 
     // We need a unique id for each deleted sample
-    date_deleted DateTime @default(now()) @unique
+    date_deleted DateTime @default(now())
 
     // This maps to the table name in the database.
     // The model is what prisma will use on the client.
@@ -109,7 +106,7 @@ model Label {
     // This maps to the table name in the database.
     // The model is what prisma will use on the client.
     // - i.e. prisma.label.findMany()
-    @@map("team_labelss")
+    @@map("team_labels")
 }
 
 generator client {

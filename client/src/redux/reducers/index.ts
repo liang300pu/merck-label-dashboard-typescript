@@ -9,6 +9,7 @@ import { combineReducers } from "redux";
  */
 
 import samplesReducer from "./sampleReducer";
+import deletedSamplesReducer from "./deletedSamplesReducer";
 import teamReducer from "./teamReducer";
 import teamsReducer from "./teamsReducer";
 import printersReducer from "./printerReducer";
@@ -18,6 +19,7 @@ import labelsReducer from "./labelsReducer"
 const reducers = combineReducers({
     printers: printersReducer,
     samples: samplesReducer,
+    deletedSamples: deletedSamplesReducer,
     team: teamReducer,
     teams: teamsReducer,
     fields: fieldsReducer,

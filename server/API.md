@@ -40,6 +40,10 @@
 ## `DELETE` /samples/:id
 - Delete a sample with `id`
 
+## `DELETE` /samples
+- Deletes all samples with provided ids
+    - Must provide `ids` in the request body
+
 ---
 
 # Teams

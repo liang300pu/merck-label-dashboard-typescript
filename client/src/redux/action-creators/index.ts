@@ -1,6 +1,6 @@
 import { Dispatch } from "redux";
-import { FieldAction, LabelAction, PrinterAction, SampleAction, TeamAction, TeamsAction } from "../actions";
-import { FieldsActionType, LabelsActionType, PrinterActionType, SampleActionType, TeamActionType, TeamsActionType } from "../action-types";
+import { DeletedSamplesAction, FieldAction, LabelAction, PrinterAction, SampleAction, TeamAction, TeamsAction } from "../actions";
+import { DeletedSampleActionType, FieldsActionType, LabelsActionType, PrinterActionType, SampleActionType, TeamActionType, TeamsActionType } from "../action-types";
 
 import * as api from "../../api";
 
@@ -64,8 +64,33 @@ export const deleteSample = (id: string) => {
 
 export const deleteSamples = (ids: string[]) => {
     return async (dispatch: Dispatch<SampleAction>) => {
-        const deleted = await Promise.all(ids.map(id => api.deleteSample(id)));
+        if (ids.length === 0)
+            return;
+        const deleted = await api.deleteSamples(ids);
         fetchTeamsSamples(deleted[0].team_name)(dispatch);
+    }
+}
+
+export const fetchAllDeletedSamples = () => {
+    return async (dispatch: Dispatch<DeletedSamplesAction>) => {
+        const data = await api.getAllDeletedSamples();
+        dispatch({
+            type: DeletedSampleActionType.FETCH_ALL,
+            payload: data
+        })
+    }
+}
+
+export const fetchTeamsDeletedSamples = (team: string) => {
+    return async (dispatch: Dispatch<DeletedSamplesAction>) => {
+        const data = await api.getAllDeletedSamples();
+        dispatch({
+            type: DeletedSampleActionType.FETCH_TEAM,
+            payload: {
+                team,
+                samples: data[team]
+            }
+        })
     }
 }
 

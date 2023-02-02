@@ -75,6 +75,8 @@ import RootPage from "./pages/RootPage";
 import EditTeamFieldsPage from "./pages/EditTeamFieldsPage";
 import ViewSamplesPage from './pages/ViewSamplesPage';
 import CreateSamplePage from './pages/CreateSamplePage';
+import ViewDeletedSamplesPage from './pages/ViewDeletedSamplesPage';
+import ViewSampleAuditPage from './pages/ViewSampleAuditPage';
 
 const router = createBrowserRouter([
     {
@@ -92,6 +94,14 @@ const router = createBrowserRouter([
     {
         path: "/samples/create",
         element: <CreateSamplePage />,
+    },
+    {
+        path: "/samples/deleted",
+        element: <ViewDeletedSamplesPage />
+    },
+    {
+        path: "/samples/audit/:id",
+        element: <ViewSampleAuditPage />
     }
 ]);
 

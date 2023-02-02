@@ -4,7 +4,8 @@ import {
     SampleActionType, 
     TeamActionType, 
     TeamsActionType,
-    LabelsActionType
+    LabelsActionType,
+    DeletedSampleActionType
 } from "../action-types";
 
 import { 
@@ -56,6 +57,22 @@ export interface SampleCreateAction {
 }
 
 export type SampleAction = FetchTeamsSamplesAction | FetchAllSamplesAction | SampleCreateAction;
+
+
+export interface FetchAllDeletedSamplesAction {
+    type: DeletedSampleActionType.FETCH_ALL;
+    payload: Record<string, Sample[]>;
+}
+
+export interface FetchTeamDeletedSamplesAction {
+    type: DeletedSampleActionType.FETCH_TEAM;
+    payload: {
+        team: string;
+        samples: Sample[];
+    };
+}
+
+export type DeletedSamplesAction = FetchAllDeletedSamplesAction | FetchTeamDeletedSamplesAction;
 
 export interface SetTeamAction {
     type: TeamActionType.SET_TEAM;

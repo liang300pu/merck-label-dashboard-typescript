@@ -15,9 +15,9 @@ export interface Sample {
 
 export type CreateSampleRequirements = Partial<Omit<Sample, "data" | "id" | "audit_id" | "audit_number" | "team_name">> 
                                      & Record<"data", Sample["data"]>
-export type UpdateSampleRequirements = Partial<Omit<Sample, "data" | "audit_id" | "audit_number">> 
+export type UpdateSampleRequirements = Partial<Omit<Sample, "id" | "audit_id" | "audit_number" | "data">> 
                                      & Record<"data", Sample["data"]> 
-                                     & Record<"id", Sample["id"]>;
+                                     & Record<"team_name", Sample["team_name"]> 
 export type DeleteSampleRequirements = Pick<Sample, "id">;                                     
 
 export interface Team {

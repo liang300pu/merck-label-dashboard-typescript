@@ -9,7 +9,7 @@ import msdlogo from '../../images/msdlogo.png'
 import { Link } from 'react-router-dom';
 import "./styles.css";
 import React, { useEffect, useState } from 'react';
-import { Home } from '@mui/icons-material';
+import { EditAttributes, Home } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { State, useActionCreators, useFetchAll } from '../../redux';
 
@@ -60,13 +60,13 @@ const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWith
                 <Divider /> 
 
                 <List>
-                    <ListItem key={"edit-team-fields"} disablePadding>
+                    <ListItem key={"create-sample"} disablePadding>
                         <ListItemButton>
-                            <Link to="/fields" className="link-button">
+                            <Link to="/samples/create" className="link-button">
                                 <ListItemIcon>
                                     <CreateIcon />
                                     <Typography variant="h6" color="primary">
-                                        Edit Team Fields
+                                        Create Sample
                                     </Typography>
                                 </ListItemIcon>
                             </Link>
@@ -77,22 +77,35 @@ const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWith
                         <ListItemButton>
                             <Link to="/samples" className="link-button">
                                 <ListItemIcon>
-                                    <CreateIcon />
+                                    <PageviewIcon />
                                     <Typography variant="h6" color="primary">
-                                        View Teams Samples
+                                        View Samples
                                     </Typography>
                                 </ListItemIcon>
                             </Link>
                         </ListItemButton>
                     </ListItem>
 
-                    <ListItem key={"create-sample"} disablePadding>
+                    <ListItem key={"view-deleted-sample"} disablePadding>
                         <ListItemButton>
-                            <Link to="/samples/create" className="link-button">
+                            <Link to="/samples/deleted" className="link-button">
                                 <ListItemIcon>
-                                    <CreateIcon />
+                                    <PageviewIcon />
                                     <Typography variant="h6" color="primary">
-                                        Create Sample
+                                        View Deleted Samples
+                                    </Typography>
+                                </ListItemIcon>
+                            </Link>
+                        </ListItemButton>
+                    </ListItem>
+
+                    <ListItem key={"edit-team-fields"} disablePadding>
+                        <ListItemButton>
+                            <Link to="/fields" className="link-button">
+                                <ListItemIcon>
+                                    <EditAttributes />
+                                    <Typography variant="h6" color="primary">
+                                        Edit Team Fields
                                     </Typography>
                                 </ListItemIcon>
                             </Link>

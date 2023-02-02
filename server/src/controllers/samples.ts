@@ -158,12 +158,7 @@ export const getSamples: RequestHandler = async (req, res) => {
 }
 
 export const getAuditTrail: RequestHandler = async (req, res) => {
-    const { team, id } = req.params;
-
-    const teamExists = await teamIsActive(team);
-
-    if (!teamExists)
-        return res.status(404).json({ message: `Team "${team}" not found` });
+    const { id } = req.params;
 
     const sample = await prisma.sample.findUnique({
         where: {
@@ -320,4 +315,33 @@ export const deleteSample: RequestHandler = async (req, res) => {
     });
 
     res.status(200).json(sample);
+}
+
+export const deleteSamples: RequestHandler = async (req, res) => {
+    const { ids } = req.body;
+
+    if (!ids) 
+        return res.status(400).json({ message: "No ids provided" });
+
+    const samples = await prisma.sample.findMany({
+        where: {
+            id: {
+                in: ids
+            }
+        }
+    });
+
+    if (samples.length === 0)
+        return res.status(404).json({ message: "No samples found" });
+
+    await prisma.deleted.createMany({
+        data: samples.map((sample) => {
+            return {
+                audit_id: sample.audit_id,
+                team_name: sample.team_name
+            }
+        })
+    });
+
+    res.status(200).json(samples);
 }
