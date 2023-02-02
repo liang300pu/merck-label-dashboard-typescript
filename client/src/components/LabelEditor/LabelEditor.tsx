@@ -96,7 +96,7 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
             lastMousePositionRef.current = { x: editorRef.current.offsetLeft, y: editorRef.current.offsetTop };
             loadSavedLayout();
         }
-    }, [loadSavedLayout]);
+    }, []);
 
     useEffect(() => {
         onEntityInfoChange(entities);
@@ -104,7 +104,7 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
 
     useEffect(() => {
         loadSavedLayout();
-    }, [selectedTeam, loadSavedLayout])
+    }, [selectedTeam])
 
     const updateLastMousePosition = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         lastMousePositionRef.current = { x: event.clientX, y: event.clientY };
