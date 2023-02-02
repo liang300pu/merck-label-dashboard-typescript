@@ -206,6 +206,20 @@ Zihao Liang: [https://www.linkedin.com/in/zihao-liang-232988149/](https://www.li
 
 Alexis Hvostal (Team Leader): [https://www.linkedin.com/in/alexis-hvostal/](https://www.linkedin.com/in/alexis-hvostal/)
 
+<h3>GitHub pages of developers:</h3>
+
+Thomas Hughes: [https://github.com/SomberTM](https://github.com/SomberTM)
+
+Justin Smith: [https://github.com/ChimayoX](https://github.com/ChimayoX)
+
+Zixiao Wang: [https://github.com/ChopinNo3Op9](https://github.com/ChopinNo3Op9)
+
+Kihunn Anderson: [https://github.com/kihunn](https://github.com/kihunn)
+
+Zihao Liang: [https://github.com/liang300pu](https://github.com/liang300pu)
+
+Alexis Hvostal (Team Leader): [https://github.com/alexishvostal](https://github.com/alexishvostal)
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
