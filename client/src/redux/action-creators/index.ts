@@ -62,6 +62,13 @@ export const deleteSample = (id: string) => {
     }
 }
 
+export const deleteSamples = (ids: string[]) => {
+    return async (dispatch: Dispatch<SampleAction>) => {
+        const deleted = await Promise.all(ids.map(id => api.deleteSample(id)));
+        fetchTeamsSamples(deleted[0].team_name)(dispatch);
+    }
+}
+
 // ---------------------- TEAM ----------------------
 
 export const setTeam = (team: string) => {

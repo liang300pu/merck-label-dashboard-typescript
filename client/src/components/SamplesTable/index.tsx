@@ -1,10 +1,87 @@
 import { useSelector } from "react-redux";
-import { State, useActionCreators } from "../../redux";
 import { useEffect, useState } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+
+import { 
+    DataGrid, 
+    GridColDef, 
+    GridRowId, 
+    GridToolbar, 
+    GridToolbarContainer 
+} from "@mui/x-data-grid";
+import { Button } from "@mui/material";
+import { 
+    Delete, 
+    NoteAdd, 
+    Refresh,
+    History
+} from "@mui/icons-material";
+
+import { DateTime } from "luxon";
+
+import { Sample } from "../../api";
+import { State, useActionCreators } from "../../redux";
 
 import "./styles.css"
-import { DateTime } from "luxon";
+
+interface SamplesTableToolbarProps {
+    selectedSamples: Sample[];
+}
+
+const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
+    selectedSamples
+}) => {
+
+    const team = useSelector((state: State) => state.team);
+    const {
+        fetchTeamsSamples,
+        deleteSample
+    } = useActionCreators();
+
+    return (
+        <GridToolbarContainer>
+            <GridToolbar />
+            
+            <Button 
+                startIcon={<NoteAdd />} 
+                disabled={selectedSamples.length == 0} 
+                // onClick={onGenerateLabelsClick}
+            >
+                Generate Label(s)
+            </Button>
+
+            <Button 
+                startIcon={<Delete />} 
+                disabled={selectedSamples.length == 0} 
+                onClick={() => { 
+                    for (const sample of selectedSamples) {
+                        deleteSample(sample.id);
+                    }
+                }}
+            >
+                Delete Sample(s)
+            </Button>
+            
+            <Button 
+                startIcon={<History />} 
+                disabled={selectedSamples.length != 1}
+            >
+                {/* <Link
+                    to={auditLink!(selectedSamples[0]?.audit_id)}
+                    style={{textDecoration: 'none', color: 'inherit'}}
+                >
+                    View Audit Table    
+                </Link> */}
+            </Button>
+
+            <Button 
+                startIcon={<Refresh />} 
+                onClick={() => fetchTeamsSamples(team)}
+            >
+                Refresh Samples
+            </Button>
+        </GridToolbarContainer>
+    )
+}
 
 const constantGridColumns: GridColDef[] = [
     { 
@@ -92,15 +169,29 @@ const SamplesTable: React.FC = () => {
                 headerName: field.display_name,
                 flex: 1.0,
                 editable: true,
-                type: field.name.includes("date") ? "date" : "text",
+                type: field.name.includes("date") ? "date" : "string",
                 valueGetter(params) {
                     return params.row.data[field.name] ?? "N/A";
                 }
             })
         }
 
-        return setDynamicGridColDefs(dynamicGridColDefs);
+        setDynamicGridColDefs(dynamicGridColDefs);
     }
+
+    const [selectedSamples, setSelectedSamples] = useState<Sample[]>([]);
+
+    const onSelectionChange = (newSelection: GridRowId[]) => {
+        const newSelectedSamples: Sample[] = [];
+        for (const sample of samples[team] ?? []) {
+            if (newSelection.includes(sample.id)) {
+                newSelectedSamples.push(sample);
+            }
+        }
+        setSelectedSamples(newSelectedSamples);
+    }
+
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
     return (
         <>
@@ -112,7 +203,16 @@ const SamplesTable: React.FC = () => {
                     experimentalFeatures={{ newEditingApi: true }}
                     rows={samples[team] ?? []}
                     columns={[constantGridColumns[0], ...dynamicGridColDefs, ...constantGridColumns.slice(1)]}
-                    
+                    onSelectionModelChange={onSelectionChange}
+                    pageSize={itemsPerPage}
+                    rowsPerPageOptions={[5, 10, 25, 50, 100]}
+                    onPageSizeChange={(pageSize) => setItemsPerPage(pageSize)}
+                    components={{
+                        Toolbar: SamplesTableToolbar
+                    }}
+                    componentsProps={{
+                        toolbar: { selectedSamples }
+                    }}
                     checkboxSelection
                 />
             </div>

@@ -11,3 +11,10 @@ Its main use case is being able to convert from the dates that prisma likes (ISO
 - ### State Management
 
 - ### Components
+
+# Todo
+- [ ] Deleting samples is buggin  
+    - Make api endpoint to delete multiple samples
+- [ ] Add a way to view deleted samples as well as the audit trail of a sample
+- [ ] Add back label generation and make sure the label api is working properly
+- [ ] Highlight expired samples
