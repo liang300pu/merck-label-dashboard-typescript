@@ -12,20 +12,16 @@ import labelsRoutes from './routes/labels'
 
 (async function () {
     const app: express.Express = express()
-    const port = process.env.LOCAL_DEV_PORT ?? 5000
+    const port = 5000;
 
     app.use(bodyParser.json({ limit: '50mb' }))
     app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
     app.use(cors());
 
-
-    app.get("/", (req, res) => {
-        res.send("Hello World!")
-    });
-
     app.use('/arnd_samples', sampleRoutes)
     app.use('/pscs_samples', psampleRoutes)
     app.use('/qr', qrRoutes);
+
     app.use('/deleted', deletedRoutes);
     app.use('/labels', labelsRoutes);
 

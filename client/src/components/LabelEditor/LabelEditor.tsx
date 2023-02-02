@@ -74,7 +74,7 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
     const loadSavedLayout = () => {
         const storedText: LabelEntityInfo[] = JSON.parse(localStorage.getItem(selectedTeam) ?? "[]");
         const restoredTexts: LabelEntityInfoStore = {};
-        var newQRCodeID = null;
+        var newQRCodeID: string | null = null;
         for (const text of storedText) {
             const { id, text: textInfo } = generateText(text);
             if (text.size !== undefined) {
@@ -96,7 +96,7 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
             lastMousePositionRef.current = { x: editorRef.current.offsetLeft, y: editorRef.current.offsetTop };
             loadSavedLayout();
         }
-    }, [loadSavedLayout]);
+    }, []);
 
     useEffect(() => {
         onEntityInfoChange(entities);
@@ -104,7 +104,7 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
 
     useEffect(() => {
         loadSavedLayout();
-    }, [selectedTeam, loadSavedLayout])
+    }, [selectedTeam])
 
     const updateLastMousePosition = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         lastMousePositionRef.current = { x: event.clientX, y: event.clientY };

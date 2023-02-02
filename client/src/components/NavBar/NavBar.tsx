@@ -178,11 +178,6 @@ const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWith
                             Merck Label Dashboard
                         </Typography>
 
-                        <div className="msg-image-container">
-                        <Link to="/">
-                            <img src={msdlogo} alt="MSD Logo" height="60"/>
-                        </Link>
-                        </div>
                     </Toolbar>
                 </AppBar>
             </Box>
