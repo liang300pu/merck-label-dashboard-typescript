@@ -4,4 +4,7 @@ import samples from './samples'
 import psamples from './psamples'
 import printers from './printers'
 
-export default combineReducers({ samples, printers, psamples });
+const rootReducer = combineReducers({ samples, printers, psamples });
+
+export type RootState = ReturnType<typeof rootReducer>;
+export default rootReducer;

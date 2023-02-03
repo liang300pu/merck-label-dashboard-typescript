@@ -9,7 +9,7 @@ import msdlogo from '../../images/msdlogo.png'
 import { Link } from 'react-router-dom';
 import "./styles.css";
 import React, { useState } from 'react';
-import { Home } from '@mui/icons-material';
+import { Home, Print } from '@mui/icons-material';
 
 const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWithChildren) => {
     const [isSideBarOpen, setIsSideBarOpen] = useState(false);
@@ -38,6 +38,19 @@ const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWith
                                     </ListItemIcon>
                             </ListItemButton>
 
+                        </ListItem>
+                    </Link>
+
+                    <Link to="/printers" className="link-button">
+                        <ListItem key={"printers"} disablePadding>
+                            <ListItemButton style={{ textAlign: "center" }}>
+                                    <ListItemIcon>
+                                        <Print />
+                                        <Typography variant="h6" align="center" color="primary" component="div">
+                                            Printers
+                                        </Typography>
+                                    </ListItemIcon>
+                            </ListItemButton>
                         </ListItem>
                     </Link>
 

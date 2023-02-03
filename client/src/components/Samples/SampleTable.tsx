@@ -368,7 +368,7 @@ const SampleTable: React.FC<SampleTableProps> = ({
                     <Paper className="img-label-container">
                         {
                             labelImages.map((labelImage: string, i) =>
-                                <img width={270} height={90} className="img-label" key={`${i}`} src={`data:image/png;base64,${labelImage}`} alt="Label"/>
+                                <img className="img-label" key={`${i}`} src={`data:image/png;base64,${labelImage}`} alt="Label"/>
                             )
                         }
                     </Paper>
