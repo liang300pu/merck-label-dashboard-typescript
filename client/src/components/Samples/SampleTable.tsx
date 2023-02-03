@@ -98,12 +98,12 @@ const SampleTable: React.FC<SampleTableProps> = ({
      */
     const [labelImages, setLabelImages] = useState<string[]>([]);
 
-    /**
-     * This stores the most recent samples filtered by audit_id and audit_number.
-     * This only shows unique sample (i.e. unique audit_id). These are the samples
-     * that are shown in the data grid.
-     */
-    const [viewableSamples, setViewableSamples] = useState<GeneralSample[]>([]);
+    // /**
+    //  * This stores the most recent samples filtered by audit_id and audit_number.
+    //  * This only shows unique sample (i.e. unique audit_id). These are the samples
+    //  * that are shown in the data grid.
+    //  */
+    // const [viewableSamples, setViewableSamples] = useState<GeneralSample[]>([]);
 
     /**
      * Stores the currently selected samples. These are the samples that are passed to 
@@ -213,11 +213,11 @@ const SampleTable: React.FC<SampleTableProps> = ({
      * @param newSelection The new selection of samples
      */
     const onSelectionChange = (newSelection: GridRowId[]) => {
-        const samples: GeneralSample[] = []
+        const selectedSamples: GeneralSample[] = []
         newSelection.forEach((qr_code_key: GridRowId) => {
-            samples.push(viewableSamples.find((sample: GeneralSample) => sample.qr_code_key === qr_code_key)!);
+            selectedSamples.push(samples.find((sample: GeneralSample) => sample.qr_code_key === qr_code_key)!);
         });
-        setSelectedSamples(samples);
+        setSelectedSamples(selectedSamples);
     }
 
     /** ---------- end --------- */

@@ -27,31 +27,32 @@ const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWith
                 onKeyDown={toggleDrawer}
             >
                 <List>
-                    <ListItem key={"home"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/" className="link-button">
-                                <ListItemIcon>
-                                    <Home />
-                                    <Typography variant="h6" color="primary">
-                                        Home
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
+                    <Link to="/" className="link-button">
+                        <ListItem key={"home"} disablePadding>
+                            <ListItemButton>
+                                    <ListItemIcon>
+                                        <Home />
+                                        <Typography variant="h6" color="primary">
+                                            Home
+                                        </Typography>
+                                    </ListItemIcon>
+                            </ListItemButton>
 
-                    </ListItem>
-                    <ListItem key={"editor"} disablePadding>
-                        <ListItemButton style={{ textAlign: "center" }}>
-                            <Link to="/editor" className="link-button">
-                                <ListItemIcon>
-                                    <FormatShapesIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        Label Editor
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
+                        </ListItem>
+                    </Link>
+
+                    <Link to="/editor" className="link-button">
+                        <ListItem key={"editor"} disablePadding>
+                            <ListItemButton style={{ textAlign: "center" }}>
+                                    <ListItemIcon>
+                                        <FormatShapesIcon />
+                                        <Typography variant="h6" align="center" color="primary" component="div">
+                                            Label Editor
+                                        </Typography>
+                                    </ListItemIcon>
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
                 </List>
 
                 <Divider />
@@ -62,42 +63,42 @@ const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWith
                             AR&D Team
                         </Typography>
                     </ListItem>
-                    <ListItem key={"samples-table"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/samples" className="link-button">
-                                <ListItemIcon>
-                                    <PageviewIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        View Samples
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key={"samples-form"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/samples/create" className="link-button">
-                                <ListItemIcon>
-                                    <CreateIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        Create Sample
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key={"samples-deleted"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/samples/deleted" className="link-button">
-                                <ListItemIcon>
-                                    <TrashIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        View Deleted Samples
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
+                    <Link to="/samples" className="link-button">
+                        <ListItem key={"samples-table"} disablePadding>
+                            <ListItemButton>
+                                    <ListItemIcon>
+                                        <PageviewIcon />
+                                        <Typography variant="h6" align="center" color="primary" component="div">
+                                            View Samples
+                                        </Typography>
+                                    </ListItemIcon>
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
+                    <Link to="/samples/create" className="link-button">
+                        <ListItem key={"samples-form"} disablePadding>
+                            <ListItemButton>
+                                    <ListItemIcon>
+                                        <CreateIcon />
+                                        <Typography variant="h6" align="center" color="primary" component="div">
+                                            Create Sample
+                                        </Typography>
+                                    </ListItemIcon>
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
+                    <Link to="/samples/deleted" className="link-button">
+                        <ListItem key={"samples-deleted"} disablePadding>
+                            <ListItemButton>
+                                    <ListItemIcon>
+                                        <TrashIcon />
+                                        <Typography variant="h6" align="center" color="primary" component="div">
+                                            View Deleted Samples
+                                        </Typography>
+                                    </ListItemIcon>
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
                 </List>
 
                 <Divider />
@@ -108,42 +109,42 @@ const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWith
                             PCSC Team
                         </Typography>
                     </ListItem>
-                    <ListItem key={"psamples-table"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/psamples" className="link-button">
-                                <ListItemIcon>
-                                    <PageviewIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        View Samples
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key={"psamples-form"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/psamples/create" className="link-button">
-                                <ListItemIcon>
-                                    <CreateIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        Create Sample
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key={"psamples-deleted"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/psamples/deleted" className="link-button">
-                                <ListItemIcon>
-                                    <TrashIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        View Deleted Samples
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
+                    <Link to="/psamples" className="link-button">
+                        <ListItem key={"psamples-table"} disablePadding>
+                            <ListItemButton>
+                                    <ListItemIcon>
+                                        <PageviewIcon />
+                                        <Typography variant="h6" align="center" color="primary" component="div">
+                                            View Samples
+                                        </Typography>
+                                    </ListItemIcon>
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
+                    <Link to="/psamples/create" className="link-button">
+                        <ListItem key={"psamples-form"} disablePadding>
+                            <ListItemButton>
+                                    <ListItemIcon>
+                                        <CreateIcon />
+                                        <Typography variant="h6" align="center" color="primary" component="div">
+                                            Create Sample
+                                        </Typography>
+                                    </ListItemIcon>
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
+                    <Link to="/psamples/deleted" className="link-button">
+                        <ListItem key={"psamples-deleted"} disablePadding>
+                            <ListItemButton>
+                                    <ListItemIcon>
+                                        <TrashIcon />
+                                        <Typography variant="h6" align="center" color="primary" component="div">
+                                            View Deleted Samples
+                                        </Typography>
+                                    </ListItemIcon>
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
                 </List>
 
             </Box>
