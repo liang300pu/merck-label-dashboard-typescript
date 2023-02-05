@@ -261,7 +261,7 @@ Alexis Hvostal (Team Leader): [https://github.com/alexishvostal](https://github.
 [express.js]: assets/express.svg
 [express-url]: https://expressjs.com/
 
-[PostgreSQL.js]: assets/Postgres.svg
+[PostgreSQL.js]: assets/postgres.svg
 [PostgreSQL-url]: https://www.postgresql.org/
 
 [prisma.js]: assets/prisma.svg
