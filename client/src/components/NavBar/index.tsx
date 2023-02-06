@@ -1,11 +1,24 @@
-import { AppBar, Typography, Button, Container, Grow, Box, Toolbar, IconButton, Drawer, Divider, List, ListItem, ListItemButton, ListItemIcon, Select, MenuItem } from '@mui/material';
+import { 
+    AppBar, 
+    Typography, 
+    Container, 
+    Box, 
+    Toolbar, 
+    IconButton, 
+    Drawer, 
+    Divider, 
+    List, 
+    ListItem, 
+    ListItemButton, 
+    ListItemIcon, 
+    Select, 
+    MenuItem 
+} from '@mui/material';
 import MenuIcon from "@mui/icons-material/Menu";
 import CreateIcon from '@mui/icons-material/Create';
 import PageviewIcon from '@mui/icons-material/Pageview';
-import TrashIcon from '@mui/icons-material/Delete';
 import FormatShapesIcon from '@mui/icons-material/FormatShapes';
 
-import msdlogo from '../../images/msdlogo.png'
 import { Link } from 'react-router-dom';
 import "./styles.css";
 import React, { useEffect, useState } from 'react';
@@ -29,88 +42,100 @@ const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWith
                 onKeyDown={toggleDrawer}
             >
                 <List>
-                    <ListItem key={"home"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/" className="link-button">
-                                <ListItemIcon>
-                                    <Home />
-                                    <Typography variant="h6" color="primary">
-                                        Home
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
+                    <Link to="/" className="link-button">
+                        <ListItem key={"home"} disablePadding>
+                            <ListItemButton
+                                style={{ width: '100%' }}
+                            >
+                                
+                                    <ListItemIcon>
+                                        <Home />
+                                        <Typography variant="h6" color="primary">
+                                            Home
+                                        </Typography>
+                                    </ListItemIcon>
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
 
-                    </ListItem>
-
-                    <ListItem key={"editor"} disablePadding>
-                        <ListItemButton style={{ textAlign: "center" }}>
-                            <Link to="/editor" className="link-button">
-                                <ListItemIcon>
-                                    <FormatShapesIcon />
-                                    <Typography variant="h6" align="center" color="primary" component="div">
-                                        Label Editor
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
+                    <Link to="/editor" className="link-button">
+                        <ListItem key={"editor"} disablePadding>
+                            <ListItemButton style={{ textAlign: "center" }}>
+                                
+                                    <ListItemIcon>
+                                        <FormatShapesIcon />
+                                        <Typography variant="h6" align="center" color="primary" component="div">
+                                            Label Editor
+                                        </Typography>
+                                    </ListItemIcon>
+                                
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
                 </List>
 
                 <Divider /> 
 
                 <List>
-                    <ListItem key={"create-sample"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/samples/create" className="link-button">
-                                <ListItemIcon>
-                                    <CreateIcon />
-                                    <Typography variant="h6" color="primary">
-                                        Create Sample
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
+                    <Link to="/samples/create" className="link-button">
+                        <ListItem key={"create-sample"} disablePadding>
+                            <ListItemButton>
+                                
+                                    <ListItemIcon>
+                                        <CreateIcon />
+                                        <Typography variant="h6" color="primary">
+                                            Create Sample
+                                        </Typography>
+                                    </ListItemIcon>
+                                
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
 
-                    <ListItem key={"view-team-samples"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/samples" className="link-button">
-                                <ListItemIcon>
-                                    <PageviewIcon />
-                                    <Typography variant="h6" color="primary">
-                                        View Samples
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
+                    <Link to="/samples" className="link-button">
+                        <ListItem key={"view-team-samples"} disablePadding>
+                            <ListItemButton>
+                                
+                                    <ListItemIcon>
+                                        <PageviewIcon />
+                                        <Typography variant="h6" color="primary">
+                                            View Samples
+                                        </Typography>
+                                    </ListItemIcon>
+                                
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
 
-                    <ListItem key={"view-deleted-sample"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/samples/deleted" className="link-button">
-                                <ListItemIcon>
-                                    <PageviewIcon />
-                                    <Typography variant="h6" color="primary">
-                                        View Deleted Samples
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
+                    <Link to="/samples/deleted" className="link-button">
+                        <ListItem key={"view-deleted-samples"} disablePadding>
+                            <ListItemButton>
+                                
+                                    <ListItemIcon>
+                                        <PageviewIcon />
+                                        <Typography variant="h6" color="primary">
+                                            View Deleted Samples
+                                        </Typography>
+                                    </ListItemIcon>
+                                
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
 
-                    <ListItem key={"edit-team-fields"} disablePadding>
-                        <ListItemButton>
-                            <Link to="/fields" className="link-button">
-                                <ListItemIcon>
-                                    <EditAttributes />
-                                    <Typography variant="h6" color="primary">
-                                        Edit Team Fields
-                                    </Typography>
-                                </ListItemIcon>
-                            </Link>
-                        </ListItemButton>
-                    </ListItem>
+                    <Link to="/fields" className="link-button">
+                      <ListItem key={"edit-team-fields"} disablePadding>
+                            <ListItemButton>
+                                
+                                    <ListItemIcon>
+                                        <EditAttributes />
+                                        <Typography variant="h6" color="primary">
+                                            Edit Team Fields
+                                        </Typography>
+                                    </ListItemIcon>
+                                
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
                 </List>
             </Box>
         )
@@ -138,7 +163,7 @@ const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWith
     }
 
     return (        
-        <Container>
+        <Container className="nav-container">
             <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="static" color="inherit" style={{ padding: '10px', margin: '10px' }}>
                     <Toolbar className="nav-toolbar">

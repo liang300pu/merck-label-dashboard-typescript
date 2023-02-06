@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import prisma, { teamIsActive } from "../db";
+import prisma, { doesTeamExist } from "../db";
 import { Sample } from "@prisma/client";
 
 /**
@@ -23,7 +23,7 @@ export const getSamples: RequestHandler = async (req, res) => {
 
     /* Handles the case where have both an id and team. We get the sample with given id from the given team */
     if (id !== undefined && team != undefined) {
-        const teamExists = await teamIsActive(team as string);
+        const teamExists = await doesTeamExist(team as string);
 
         if (!teamExists)
             return res.status(404).json({ message: `Team "${team}" not found` });
@@ -75,7 +75,7 @@ export const getSamples: RequestHandler = async (req, res) => {
     } 
     /** Handles the case where only the team is provided. Gets all the samples for the provided team */
     else if (team !== undefined) {
-        const teamExists = await teamIsActive(team);
+        const teamExists = await doesTeamExist(team);
 
         if (!teamExists) 
             return res.status(404).json({ message: `Team "${team}" not found` });
@@ -234,7 +234,7 @@ export const createSample: RequestHandler = async (req, res) => {
 
     const team = data.team_name;
 
-    const teamExists = await teamIsActive(team);
+    const teamExists = await doesTeamExist(team);
 
     if (!teamExists) 
         return res.status(404).json({ message: `Team "${team}" not found` });   
@@ -247,43 +247,49 @@ export const createSample: RequestHandler = async (req, res) => {
 }
 
 export const updateSample: RequestHandler = async (req, res) => {
-    const { id } = req.params;
+    try {
+        const { id } = req.params;
 
-    const sample = await prisma.sample.findUnique({
-        where: {
-            id
+        const sample = await prisma.sample.findUnique({
+            where: {
+                id
+            }
+        });
+
+        if (!sample)
+            return res.status(404).json({ message: `Sample "${id}" not found` });
+
+        const isDeleted = await prisma.deleted.findFirst({
+            where: {
+                audit_id: sample.audit_id
+            }
+        });
+
+        if (isDeleted !== null)
+            return res.status(404).json({ message: `Sample "${id}" not found` });
+
+        const newSampleData = {
+            expiration_date: sample.expiration_date,
+            team_name: sample.team_name,
+            ...req.body,
+            data: {
+                ...(sample.data as object),
+                ...req.body.data
+            },
+            audit_id: sample.audit_id,
+            date_created: sample.date_created
         }
-    });
 
-    if (!sample)
-        return res.status(404).json({ message: `Sample "${id}" not found` });
+        console.log(newSampleData);
 
-    const isDeleted = await prisma.deleted.findFirst({
-        where: {
-            audit_id: sample.audit_id
-        }
-    });
+        const newSample = await prisma.sample.create({
+            data: newSampleData
+        });
 
-    if (isDeleted !== null)
-        return res.status(404).json({ message: `Sample "${id}" not found` });
-
-    const newSampleData = {
-        expiration_date: sample.expiration_date,
-        team_name: sample.team_name,
-        ...req.body,
-        data: {
-            ...(sample.data as object),
-            ...req.body.data
-        },
-        audit_id: sample.audit_id,
-        date_created: sample.date_created
+        res.status(200).json(newSample);
+    } catch (err: any) {
+        res.status(500).json({ message: err.message });
     }
-
-    const newSample = await prisma.sample.create({
-        data: newSampleData
-    });
-
-    res.status(200).json(newSample);
 }
 
 export const deleteSample: RequestHandler = async (req, res) => {

@@ -208,6 +208,30 @@ async function createTeamLabel(team: string, label: CreateTeamLabelRequirements)
     return newLabel;
 }
 
+async function generateSampleLabelWithSize(sample_id: string, width: number, length: number): Promise<string> {
+    const { data: base64image } = await axios.post(`${baseLabelsURL}/generate`, {
+        sample_id,
+        width,
+        length
+    });
+    return base64image;
+}
+
+async function generateAllUniqueLabelsForSample(sample_id: string): Promise<Sample> {
+    const { data: sample } = await axios.post(`${baseLabelsURL}/generate`, {
+        sample_id
+    });
+    return sample;
+}
+
+async function printLabels(labelImages: string[], printer: Printer): Promise<boolean> {
+    const { data } = await axios.post(`${baseLabelsURL}/print`, {
+        images: labelImages,
+        printer
+    })
+    return data.success;
+}
+
 // ----------------------------------------
 
 // * @route /printers
@@ -262,6 +286,8 @@ export {
     getTeamLabel,
     getTeamLabels,
     createTeamLabel,
+    generateSampleLabelWithSize as generateLabelForSampleWithSize,
+    printLabels,
     getAllPrinters,
     getPrinter,
     createPrinter,

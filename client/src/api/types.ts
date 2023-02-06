@@ -39,13 +39,17 @@ export type CreateTeamFieldRequirements = Pick<TeamField, "team_name" | "name" |
 export type UpdateTeamFieldRequirements = Required<Pick<TeamField, "id" | "name">> & Partial<Pick<TeamField, "display_name" | "team_name">>;
 export type DeleteTeamFieldRequirements = Pick<TeamField, "id">;
 
+export interface TeamLabelEntityPosition {
+    x: number;
+    y: number;
+}
+
 export interface TeamLabelEntity {
-    text: string;
-    textSize: number;
-    position: {
-        x: number;
-        y: number;
-    }
+    text: string,
+    textSize: number,
+    bold: boolean,
+    italic: boolean,
+    position: TeamLabelEntityPosition
 }
 
 export interface TeamLabel {

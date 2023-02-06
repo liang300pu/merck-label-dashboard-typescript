@@ -82,8 +82,7 @@
 ```
 
 ## `GET` /fields
-- Get all fields
-    - TODO MAKE SURE I GROUP BY TEAM NAME
+- Get all fields gruoped by team name
 
 ## `GET` /fields/:team
 - Get all fields for a `team`

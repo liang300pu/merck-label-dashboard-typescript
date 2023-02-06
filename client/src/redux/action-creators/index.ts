@@ -255,9 +255,9 @@ export const fetchTeamsLabels = (team: string) => {
     }
 }
 
-export const createLabel = (team: string, label: api.CreateTeamLabelRequirements) => {
+export const createLabel = (label: api.CreateTeamLabelRequirements) => {
     return async (dispatch: Dispatch<LabelAction>) => {
-        const data = await api.createTeamLabel(team, label);
+        const data = await api.createTeamLabel(label.team_name, label);
         dispatch({
             type: LabelsActionType.CREATE,
             payload: data

@@ -8,7 +8,19 @@ import {
     GridToolbar, 
     GridToolbarContainer 
 } from "@mui/x-data-grid";
-import { Button } from "@mui/material";
+import { 
+    Box,
+    Button, 
+    CircularProgress, 
+    CircularProgressProps, 
+    Dialog, 
+    DialogActions, 
+    DialogContent, 
+    DialogTitle, 
+    MenuItem, 
+    Select, 
+    Typography 
+} from "@mui/material";
 import { 
     Delete, 
     NoteAdd, 
@@ -18,18 +30,240 @@ import {
 
 import { DateTime } from "luxon";
 
+import { Link } from "react-router-dom";
+
 import * as api from "../../api";
 import { State, useActionCreators } from "../../redux";
 
 import "./styles.css"
-import { Link } from "react-router-dom";
 
 interface SamplesTableToolbarProps {
     selectedSamples: api.Sample[];
+    onGenerateLabelsClick: () => void;
 }
 
-const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
+interface PrintLabelsPopupDialogProps {
+    open: boolean;
+    onClose: () => void;
+    selectedSamples: api.Sample[];
+}
+
+// Copied from https://material-ui.com/components/progress/#circular-with-label
+function CircularProgressWithLabel(
+    props: CircularProgressProps & { value: number },
+  ) {
+    return (
+        <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            <CircularProgress variant="determinate" {...props} />
+            <Box
+            sx={{
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+                position: 'absolute',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
+            >
+                <Typography
+                    variant="caption"
+                    component="div"
+                    color="text.secondary"
+                >{`${Math.round(props.value)}%`}</Typography>
+            </Box>
+        </Box>
+    );
+}
+
+const PrintLabelsPopupDialog: React.FC<PrintLabelsPopupDialogProps> = ({
+    open,
+    onClose,
     selectedSamples
+}) => {
+    const { printers, labels, team } = useSelector((state: State) => { 
+        return { printers: state.printers, labels: state.labels, team: state.team };
+    });
+
+    const [selectedPrinter, setSelectedPrinter] = useState<api.Printer | null>(null);
+
+    const [generatedLabels, setGeneratedLabels] = useState<string[]>([]);
+    const [generatingLabels, setGeneratingLabels] = useState<boolean>(false);
+    const [generatingLabelsProgress, setGeneratingLabelsProgress] = useState<number>(0);
+
+    const [selectedLabelID, setSelectedLabelID] = useState<number>(-1);
+
+    const generateLabels = async (labelWidth: number, labelLength: number) => {
+        const base64images: string[] = [];
+        setGeneratingLabels(true);
+        const progressIncrement = 100 / selectedSamples.length;
+        for (const sample of selectedSamples) {
+            const base64image = await api.generateLabelForSampleWithSize(sample.id, labelWidth, labelLength);
+            setGeneratingLabelsProgress(prev => prev + progressIncrement);
+            base64images.push(base64image);
+        }
+        setGeneratingLabels(false);
+        setGeneratingLabelsProgress(0);
+        setGeneratedLabels(base64images);
+    }
+
+    useEffect(() => {
+        if (selectedLabelID != -1) {
+            const selectedLabel = labels[team].find(label => label.id == selectedLabelID);
+            if (selectedLabel) {
+                generateLabels(selectedLabel.width, selectedLabel.length);
+            }
+        } else {
+            setGeneratedLabels([]);
+        }
+    }, [selectedLabelID]);
+
+    const handleClose = () => {
+        setSelectedLabelID(-1);
+        setGeneratingLabels(false);
+        setGeneratingLabelsProgress(0);
+        setGeneratedLabels([]);
+        onClose();
+    }
+
+    return (
+        <Dialog 
+            open={open} 
+            onClose={handleClose}
+            fullWidth
+            maxWidth="sm"
+        >            
+            <DialogTitle 
+                variant="h6" 
+                color="primary"
+                style={{ display: 'flex', justifyContent: 'center' }}
+            >
+                Select Label Size
+            </DialogTitle>
+
+            <DialogContent
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignSelf: 'center'
+                }}
+            >
+                <Select
+                    value={selectedLabelID}
+                    onChange={(event) => {
+                        setSelectedLabelID(event.target.value as number);
+                    }}
+                    variant='standard'
+                >
+                    <MenuItem value={-1}>Select a label size</MenuItem>
+                    {
+                        labels[team] && labels[team].length > 0 
+                        ?
+                        labels[team].map((label, index) => (
+                            <MenuItem
+                                key={index}
+                                value={label.id}
+                            >
+                                {label.width}mm x {label.length}mm
+                            </MenuItem>
+                        ))
+                        : <></>
+                    }
+                </Select>
+            </DialogContent>
+
+            <DialogTitle 
+                variant="h6" 
+                color="primary"
+                style={{ display: 'flex', justifyContent: 'center' }}
+            >
+                Generated Labels
+            </DialogTitle>
+            <DialogContent
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-evenly',
+                    flexDirection: 'row',
+                    flexWrap: 'wrap'
+                }}
+            >
+                {
+                    generatingLabels
+                    ?
+                    <CircularProgressWithLabel 
+                        color="primary"
+                        value={generatingLabelsProgress} 
+                    />
+                    :
+                    generatedLabels.length === 0
+                    ?
+                    <Typography variant="body1" color="text.secondary">Select a label size...</Typography>
+                    :
+                    generatedLabels.map((label, index) => (
+                        <img 
+                            src={`data:image/png;base64,${label}`} 
+                            className="generated-label"
+                            key={index} 
+                        />
+                    ))
+                }
+            </DialogContent>
+            <DialogContent
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignSelf: 'center'
+                }}
+            >
+                <Typography 
+                    variant="h6" 
+                    color="primary"
+                >
+                    Select Printer: 
+                </Typography>
+                <Select
+                    value={selectedPrinter?.ip ?? ""}
+                    onChange={(event) => { 
+                        setSelectedPrinter(
+                            printers.find(printer => printer.ip == event.target.value)!
+                        ); 
+                    }}
+                    variant='standard'
+                >
+                    {
+                        printers.map((printer, index) => (
+                            <MenuItem
+                                key={index}
+                                value={printer.ip}
+                            >{printer.name} - {printer.location}</MenuItem>
+                        ))
+                    }
+                </Select>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    disabled={selectedPrinter === null}
+                    onClick={() => {
+                        api.printLabels(generatedLabels, selectedPrinter!);
+                    }}
+                >
+                    Print
+                </Button>
+                <Button 
+                    onClick={handleClose}
+                >
+                    Close
+                </Button>
+            </DialogActions>
+        </Dialog>
+    )
+}
+
+
+const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
+    selectedSamples,
+    onGenerateLabelsClick
 }) => {
 
     const team = useSelector((state: State) => state.team);
@@ -45,7 +279,7 @@ const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
             <Button 
                 startIcon={<NoteAdd />} 
                 disabled={selectedSamples.length == 0} 
-                // onClick={onGenerateLabelsClick}
+                onClick={onGenerateLabelsClick}
             >
                 Generate Label(s)
             </Button>
@@ -123,7 +357,7 @@ const constantGridColumns: GridColDef[] = [
         valueParser(value, params) {
             if (params === undefined) return;
             const date = DateTime.fromJSDate(value).toISO();
-            params.row.date_created = date;
+            params.row.expiration_date = date;
             return date;
         }
     },
@@ -147,6 +381,8 @@ const SamplesTable: React.FC = () => {
         updateSample,
      } = useActionCreators();
 
+     const [generateLabelDialogOpen, setGenerateLabelDialogOpen] = useState(false);
+
     useEffect(() => {
         if (team === undefined || team === '') {
             fetchAllSamples();
@@ -161,6 +397,7 @@ const SamplesTable: React.FC = () => {
         if ((team === undefined || team === '') || (fields === undefined || fields[team] === undefined)) 
             return;
         generateDynamicGridColDefs();
+        // setGeneratedLabels([]);
     }, [team, fields]);
 
     const [dynamicGridColDefs, setDynamicGridColDefs] = useState<GridColDef[]>([]);
@@ -231,7 +468,7 @@ const SamplesTable: React.FC = () => {
 
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
-    type DataGridSampleType = {
+    type DataGridSampleRow = {
         [key in keyof api.Sample]: string | number | Record<string, any>;
     };
 
@@ -245,25 +482,47 @@ const SamplesTable: React.FC = () => {
      * we know that the value was modified once resided in the data key of the old data object
      *  and we need to move it to the data object of newData.
      */
-    const onRowUpdate = (newData: DataGridSampleType, oldData: DataGridSampleType) => {
+    const onRowUpdate = (newRow: DataGridSampleRow, oldRow: DataGridSampleRow) => {
         const newSampleData: api.UpdateSampleRequirements = {
-            expiration_date: DateTime.fromISO(newData.expiration_date as string),
-            date_created: DateTime.fromISO(newData.date_created as string),
-            date_modified: DateTime.fromISO(newData.date_modified as string),
+            expiration_date: DateTime.fromISO(newRow.expiration_date as string),
+            date_created: DateTime.fromISO(newRow.date_created as string),
+            date_modified: DateTime.now(),
             team_name: team,
-            data: {}
-        }
+            data: newRow.data as Record<string, any>
+        };
 
-        for (const field of fields[team]) {
-            if (!oldData.hasOwnProperty(field.name) && newData[field.name] !== undefined) {
-                newData.data[field.name] = newData[field.name];
-                delete newData[field.name];
+        // THIS IS WHY I HATE DATES. TRYING TO SHOW THEM IN THE DATA GRID IS A NIGHTMARE
+        if (newSampleData.expiration_date?.invalidExplanation !== null) {
+            const newDate = DateTime.fromFormat(newRow.expiration_date as string, "MM/dd/yyyy");
+            if (newDate.invalidExplanation === null) {
+                newSampleData.expiration_date = newDate;
+            } else {
+                newSampleData.expiration_date = undefined;
             }
         }
 
-        newSampleData.data = newData.data as Record<string, any>;
-        updateSample(oldData.id as string, newSampleData);
-        return newData;
+        for (const field of fields[team]) {
+            if (!oldRow.hasOwnProperty(field.name) && newRow[field.name] !== undefined) {
+                newRow.data[field.name] = newRow[field.name];
+                delete newRow[field.name];
+            }
+        }
+
+        updateSample(oldRow.id as string, newSampleData);
+        return {
+            ...newRow,
+            ...newSampleData,
+        };
+    }
+
+    const onGenerateLabelsClick = async () => {
+        // const base64images: string[] = [];
+        // for (const sample of selectedSamples) {
+        //     const base64image = await api.generateLabelForSampleWithSize(sample.id, 62, 100);
+        //     base64images.push(base64image);
+        // }
+        // setGeneratedLabels(base64images);
+        setGenerateLabelDialogOpen(true);
     }
 
     const columns = [
@@ -285,7 +544,9 @@ const SamplesTable: React.FC = () => {
                     rows={rows}
                     columns={columns}
                     onSelectionModelChange={onSelectionChange}
-                    processRowUpdate={(newRow: DataGridSampleType, oldRow: DataGridSampleType) => onRowUpdate(newRow, oldRow)}
+                    getRowId={(row) => row.id as string}
+                    processRowUpdate={(newRow: any, oldRow: any) => { onRowUpdate(newRow, oldRow)}}
+                    onProcessRowUpdateError={(error) => {}}
                     pageSize={itemsPerPage}
                     rowsPerPageOptions={[5, 10, 25, 50, 100]}
                     onPageSizeChange={(pageSize) => setItemsPerPage(pageSize)}
@@ -294,12 +555,18 @@ const SamplesTable: React.FC = () => {
                         Toolbar: SamplesTableToolbar
                     }}
                     componentsProps={{
-                        toolbar: { selectedSamples }
+                        toolbar: { selectedSamples, onGenerateLabelsClick }
                     }}
                     checkboxSelection
                     disableSelectionOnClick
+                    editMode="row"
                 />
             </div>
+            <PrintLabelsPopupDialog 
+                open={generateLabelDialogOpen}
+                onClose={() => setGenerateLabelDialogOpen(false)}
+                selectedSamples={selectedSamples}
+            />
         </>
     );
 

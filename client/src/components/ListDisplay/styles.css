@@ -1,0 +1,26 @@
+.list-display-container {
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    padding: 10px;
+}
+
+.list-display-list-item-button {
+    border-radius: 10px;
+}
+
+.list-display-add-button {
+    border-radius: 10px;
+    margin-top: auto;
+    align-self: flex-end;
+}
+
+.list-display-add-input {
+    text-align: center;
+}
+
+.list-display-delete-button {
+    margin: 0px;
+    padding: 0px;
+    width: min-content;
+}

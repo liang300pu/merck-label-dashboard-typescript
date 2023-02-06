@@ -61,10 +61,10 @@ export class BrotherQLRaster {
     public static convertToPixels(mmWidth: number, mmLength: number, dpi: number = 300): [number, number] {
         const inWidth = mmWidth / 25.4;
         const inLength = mmLength / 25.4;
-        const aspect = (mmWidth > mmLength) ? mmWidth / mmLength : mmLength / mmWidth;
-        const diagonal = dpi * Math.sqrt(Math.pow(inWidth, 2) + Math.pow(inLength, 2));
-        const length = diagonal / Math.sqrt(1 + Math.pow(aspect, 2));
-        const width = diagonal / Math.sqrt(1 + Math.pow(1 / aspect, 2));
+        const aspectRatio = (mmWidth > mmLength) ? mmWidth / mmLength : mmLength / mmWidth;
+        const diagonalLength = dpi * Math.sqrt(Math.pow(inWidth, 2) + Math.pow(inLength, 2));
+        const length = diagonalLength / Math.sqrt(1 + Math.pow(aspectRatio, 2));
+        const width = diagonalLength / Math.sqrt(1 + Math.pow(1 / aspectRatio, 2));
         return [width, length]
     }
 
@@ -146,21 +146,33 @@ export class BrotherQLRaster {
         return this;
     }
 
-    public addRasterData(image: Jimp): BrotherQLRaster {
+    public addRasterData(image: Jimp, marginTop?: number): BrotherQLRaster {
         const labelLength = this.options.media.length;
         const labelWidth = this.options.media.width;
 
         // convert to pixels but a little too large
-        const [widthpx, lengthpx] = BrotherQLRaster.convertToPixels(labelLength, labelWidth);
+        const [widthpx, lengthpx] = BrotherQLRaster.convertToPixels(
+                                        labelLength, 
+                                        labelWidth, 
+                                        this.options.dpi600 ? 600 : 300
+                                    );
+
+        // Even the conversion is a little too large so we take away a little
+        // buffer to make sure the image is not too large and over fills the label
+        const pixelConversionBuffer = 100;
 
         if (labelLength != 0)
-            image.resize(labelLength * 11, (labelLength * 11) / 3.125);
+            image.resize(widthpx - pixelConversionBuffer, lengthpx - pixelConversionBuffer);
+        
         image.greyscale().contrast(1)  
+
         if (image.bitmap.width > image.bitmap.height)
             image.rotate(90);
 
         const bufferSize = labelLength + 3;
-        const topMargin =  Math.floor((labelWidth / 2) * (labelWidth / labelLength));
+
+        if (!marginTop)
+            marginTop = Math.ceil((labelWidth / 3));
 
         for (let y = 0; y < image.bitmap.height; y++) {
             let row = Buffer.alloc(bufferSize);
@@ -169,9 +181,10 @@ export class BrotherQLRaster {
             row[2] = labelLength;
             for (let x = 0; x < image.bitmap.width; x++) {
                 if (image.getPixelColor(x, y) == 255) {
-                    let byteNum = labelLength - Math.floor((x / 8) + 3);
+                    // 90 bytes per raster row, 8 pixels per byte
+                    let byteNum = 90 - Math.floor((x / 8));
                     let bitOffset = x % 8;
-                    row[byteNum - topMargin] |= 1 << bitOffset;
+                    row[byteNum] |= 1 << bitOffset;
                 }
             }
             if (this.options.compression) {

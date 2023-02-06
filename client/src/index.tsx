@@ -77,6 +77,7 @@ import ViewSamplesPage from './pages/ViewSamplesPage';
 import CreateSamplePage from './pages/CreateSamplePage';
 import ViewDeletedSamplesPage from './pages/ViewDeletedSamplesPage';
 import ViewSampleAuditPage from './pages/ViewSampleAuditPage';
+import LabelEditorPage from './pages/LabelEditorPage';
 
 const router = createBrowserRouter([
     {
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
     {
         path: "/samples/audit/:id",
         element: <ViewSampleAuditPage />
+    },
+    {
+        path: "/editor",
+        element: <LabelEditorPage />
     }
 ]);
 

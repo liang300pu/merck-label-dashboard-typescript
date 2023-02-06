@@ -2,16 +2,14 @@ import Jimp from 'jimp';
 import prisma from '../db';
 import { BrotherQLPrinter } from './printer';
 import { BrotherQLRaster, BrotherQLRasterImages } from './raster';
-
-export async function getPrinters(): Promise<Printer[]> {
-    return await prisma.printers.findMany();
-}
+import { Printer } from '@prisma/client';
+import sharp, { Sharp } from 'sharp';
 
 export function formatPrinterURL(printer: Printer) {
     return `http://${printer.ip}:631/ipp/print`;
 }
 
-export async function printLabels(base64labels: string[], printer: Printer) {
+export async function sendLabelsToPrinter(base64labels: string[], printer: Printer) {
     const brotherPrinter = new BrotherQLPrinter(formatPrinterURL(printer));
     const printerAttributes = await brotherPrinter.getAttributes();
 

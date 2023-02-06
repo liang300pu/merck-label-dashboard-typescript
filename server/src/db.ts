@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 const prisma: PrismaClient = new PrismaClient();
 
-export const teamIsActive = async (team: string) => {
+export const doesTeamExist = async (team: string) => {
     const teamInDB = await prisma.team.findUnique({
         where: {
             name: team

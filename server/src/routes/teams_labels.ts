@@ -6,6 +6,8 @@ import {
     getLabels,
     createLabel,
     getAllLabels,
+    generateLabelImage,
+    printLabels,
     // deleteLabel,
 } from '../controllers/teams_labels';
 
@@ -14,6 +16,10 @@ const router = express.Router({
 });
 
 router.get('/', getAllLabels);
+
+router.post('/generate', generateLabelImage);
+
+router.post('/print', printLabels);
 
 router.get('/:team', getLabels);
 
