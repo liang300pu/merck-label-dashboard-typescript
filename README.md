@@ -115,29 +115,6 @@ This will clone the repository into a folder called `merck-label-dashboard-types
 > cd merck-label-dashboard-typescript
 > ```
 
-### Follow these instructions step by step
-> ```bash
-> cd merck-label-dashboard-typescript/server
-> ```
-- npm install
-- Create a file named `.env`
-    - Change 'POSTGRESS_DEV_URI' to your local database URI
-    - URI format is as follows 'postgress://{user}:{password}@localhost:{port}/{database_name}
-    - Default port is 5432 if you set up postgress using postgress app
-    - If your user has no password then omit the ':{password}' portion
-- npx prisma migrate dev --name init --preview-feature
-- npm start
-
-### In another terminal/shell
-
-> Navigate back to `merck-label-dashboard-typescript`
-> ```bash
-> cd merck-label-dashboard-typescript/client
-> ```
-- npm install
-    - May need to add the --force tag to the end
-- npm start
-
 to start the server. You can verify that the everything is running by navigating to `localhost:3000` in your browser. The api is running on `localhost:5000`.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
