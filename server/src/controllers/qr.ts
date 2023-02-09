@@ -51,10 +51,51 @@ async function getPrinters(req: any, res: any) {
     res.status(200).json(printers)
 }
 
+async function createPrinter(req: any, res: any) {
+    const printer = req.body;
+
+    const printerExists = await prisma.printers.findFirst({
+        where: {
+            ip: printer.ip
+        }
+    });
+
+    if (printerExists) 
+        return res.status(400).json({ message: `Printer with IP "${printer.ip}" already exists` })
+
+    const newPrinter = await prisma.printers.create({
+        data: printer
+    });
+
+    res.status(201).json(newPrinter);
+}
+
+async function deletePrinter(req: any, res: any) {
+    const { ip } = req.body;
+
+    const printerExists = await prisma.printers.findFirst({
+        where: {
+            ip: ip
+        }
+    });
+
+    if (!printerExists) 
+        return res.status(400).json({ message: `Printer with IP "${ip}" doesn't exists` })
+
+    const deletedPrinter = await prisma.printers.delete({
+        where: {
+            ip
+        }
+    });
+
+    res.status(200).json(deletedPrinter);
+}
 
 export {
     createQRCodeKey,
     createQRCodeLabel,
     getPrinters,
+    createPrinter,
+    deletePrinter,
     printQRCodeLabel
 }

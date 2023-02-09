@@ -24,6 +24,8 @@ export const createQRCodeKey = (sample: any) => axios.post(`${qrURL}/key`, sampl
 export const createLabel = (sample: any, team: Team) => axios.post(`${qrURL}/label/${team}`, sample)
 
 export const fetchPrinters = () => axios.get(`${qrURL}/printers`)
+export const createPrinter = (printer: Printer) => axios.post(`${qrURL}/printers`, printer);
+export const deletePrinter = (ip: string) => axios.delete(`${qrURL}/printers`, { data: { ip } });
 export const printLabels = (base64labels: string[], printer: Printer) => axios.post(`${qrURL}/print`, { base64labels, printer })
 
 const deletedURL = `${baseURL}/deleted`;

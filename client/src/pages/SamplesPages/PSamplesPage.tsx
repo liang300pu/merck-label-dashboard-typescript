@@ -19,7 +19,7 @@ const PSamplesPage = () => {
 
     useEffect(() => {
         onRefresh();
-    }, [dispatch])
+    }, []);
 
     const onGenerateLabels = async (selected: GeneralSample[]): Promise<string[]> => {
         const labels: string[] = [];

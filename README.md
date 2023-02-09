@@ -229,23 +229,23 @@ Alexis Hvostal (Team Leader): [https://github.com/alexishvostal](https://github.
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
 
-[React.js]: react.svg
+[React.js]: assets/react.svg
 [React-url]: https://reactjs.org/
 
-[typescript.js]: typescript.svg
+[typescript.js]: assets/typescript.svg
 [typescript-url]: https://www.typescriptlang.org/
 
-[express.js]: express.svg
+[express.js]: assets/express.svg
 [express-url]: https://expressjs.com/
 
-[PostgreSQL.js]: Postgres.svg
+[PostgreSQL.js]: assets/postgres.svg
 [PostgreSQL-url]: https://www.postgresql.org/
 
-[prisma.js]:prisma.svg
-[prisma-url]:https://www.prisma.io/
+[prisma.js]: assets/prisma.svg
+[prisma-url]: https://www.prisma.io/
 
-[redux.js]:redux.svg
+[redux.js]: assets/redux.svg
 [redux-url]: https://redux.js.org/
 
-[mui.js]: mui.svg
-[mui-url]:https://mui.com/
+[mui.js]: assets/mui.svg
+[mui-url]: https://mui.com/

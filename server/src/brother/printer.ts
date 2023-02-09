@@ -50,12 +50,13 @@ export class BrotherQLPrinter extends IPP.Printer {
 
         // hacky way to figure out if a job is completed
         var completed: boolean = false;
+
         await new Promise<void>((resolve) => {
             const interval = setInterval(async () => {
                 if (!completed) {
                     const status = await this.getJob(id);
                     // @ts-ignore
-                    completed = status["job-attributes-tag"]["job-state"] == "completed";
+                    completed = status?.["job-attributes-tag"]?.["job-state"] == "completed";
                 } else {
                     clearInterval(interval);
                     resolve();
