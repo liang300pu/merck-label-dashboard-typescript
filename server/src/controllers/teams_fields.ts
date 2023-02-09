@@ -6,19 +6,24 @@ import { TeamField } from '@prisma/client'
 // - Possibly add a route that returns all fields grouped by team.
 
 export const getAllTeamsFields: RequestHandler = async (req, res) => {
-    const fields = await prisma.teamField.findMany()
+    try {
+        const fields = await prisma.teamField.findMany()
 
-    const teams = await prisma.team.findMany()
+        const teams = await prisma.team.findMany()
 
-    const fieldsGroupedByTeam: Record<string, TeamField[]> = {}
+        const fieldsGroupedByTeam: Record<string, TeamField[]> = {}
 
-    for (const team of teams) {
-        fieldsGroupedByTeam[team.name] = fields.filter(
-            (field) => field.team_name === team.name
-        )
+        for (const team of teams) {
+            fieldsGroupedByTeam[team.name] = fields.filter(
+                (field) => field.team_name === team.name
+            )
+        }
+
+        res.status(200).json(fieldsGroupedByTeam)
+    } catch (error: any) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
     }
-
-    res.status(200).json(fieldsGroupedByTeam)
 }
 
 /**
@@ -28,26 +33,31 @@ export const getAllTeamsFields: RequestHandler = async (req, res) => {
  * @returns
  */
 export const getTeamsFields: RequestHandler = async (req, res) => {
-    const { team: teamName } = req.params
+    try {
+        const { team: teamName } = req.params
 
-    const team = await prisma.team.findUnique({
-        where: {
-            name: teamName,
-        },
-    })
+        const team = await prisma.team.findUnique({
+            where: {
+                name: teamName,
+            },
+        })
 
-    if (!team)
-        return res
-            .status(404)
-            .json({ message: `No team with name "${teamName}" was found` })
+        if (!team)
+            return res
+                .status(404)
+                .json({ message: `No team with name "${teamName}" was found` })
 
-    const fields = await prisma.teamField.findMany({
-        where: {
-            team_name: teamName,
-        },
-    })
+        const fields = await prisma.teamField.findMany({
+            where: {
+                team_name: teamName,
+            },
+        })
 
-    res.status(200).json(fields)
+        res.status(200).json(fields)
+    } catch (error: any) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
 }
 
 /**
@@ -57,63 +67,81 @@ export const getTeamsFields: RequestHandler = async (req, res) => {
  * @returns
  */
 export const getTeamsField: RequestHandler = async (req, res) => {
-    const { team, id } = req.params
+    try {
+        const { team, id } = req.params
 
-    const field = await prisma.teamField.findUnique({
-        where: {
-            id: parseInt(id),
-        },
-    })
+        const field = await prisma.teamField.findUnique({
+            where: {
+                id: parseInt(id),
+            },
+        })
 
-    if (!field)
-        return res
-            .status(404)
-            .json({
+        if (!field)
+            return res.status(404).json({
                 message: `No field with id "${id}" was found on team "${team}"`,
             })
 
-    res.status(200).json(field)
+        res.status(200).json(field)
+    } catch (error: any) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
 }
 
 export const createTeamsField: RequestHandler = async (req, res) => {
-    const { team_name, name, display_name } = req.body
+    try {
+        const { team_name, name, display_name } = req.body
 
-    const field = await prisma.teamField.create({
-        data: {
-            name,
-            display_name,
-            team_name,
-        },
-    })
+        const field = await prisma.teamField.create({
+            data: {
+                name,
+                display_name,
+                team_name,
+            },
+        })
 
-    res.status(201).json(field)
+        res.status(201).json(field)
+    } catch (error: any) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
 }
 
 export const deleteTeamsField: RequestHandler = async (req, res) => {
-    const { id } = req.params
+    try {
+        const { id } = req.params
 
-    const deletedField = await prisma.teamField.delete({
-        where: {
-            id: parseInt(id),
-        },
-    })
+        const deletedField = await prisma.teamField.delete({
+            where: {
+                id: parseInt(id),
+            },
+        })
 
-    res.status(200).json(deletedField)
+        res.status(200).json(deletedField)
+    } catch (error: any) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
 }
 
 export const updateTeamsField: RequestHandler = async (req, res) => {
-    const { id } = req.params
-    const { name, display_name } = req.body
+    try {
+        const { id } = req.params
+        const { name, display_name } = req.body
 
-    const updatedField = await prisma.teamField.update({
-        where: {
-            id: parseInt(id),
-        },
-        data: {
-            name,
-            display_name,
-        },
-    })
+        const updatedField = await prisma.teamField.update({
+            where: {
+                id: parseInt(id),
+            },
+            data: {
+                name,
+                display_name,
+            },
+        })
 
-    res.status(200).json(updatedField)
+        res.status(200).json(updatedField)
+    } catch (error: any) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
 }
