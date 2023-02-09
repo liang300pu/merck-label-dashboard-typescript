@@ -5,17 +5,9 @@
     justify-content: center;
     align-items: center;
     align-content: center;
-    width: 100vw;
+    align-self: center;
+    width: auto;
     padding: 5px;
-    margin: 0px;
-}
-
-.nav-container {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-
-    width: 100vw;
-    height: 100px;
 }
 
 .nav-navigation-buttons-container {

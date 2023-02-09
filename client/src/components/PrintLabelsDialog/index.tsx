@@ -7,9 +7,13 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    ImageList,
+    ImageListItem,
     MenuItem,
+    Paper,
     Select,
     SelectChangeEvent,
+    Theme,
     Typography,
 } from '@mui/material'
 import * as api from '../../api'
@@ -17,6 +21,7 @@ import './styles.css'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { State } from '../../redux'
+import { useTheme } from '@mui/styles'
 
 // Copied from https://material-ui.com/components/progress/#circular-with-label
 function CircularProgressWithLabel(
@@ -80,6 +85,8 @@ const PrintLabelsDialog: React.FC<PrintLabelsDialogProps> = ({
         labelLayouts: state.labels,
     }))
 
+    const theme = useTheme<Theme>()
+
     const resetState = () => {
         setGeneratedLabelsAsBase64([])
         setSelectedLabelLayout(null)
@@ -97,16 +104,14 @@ const PrintLabelsDialog: React.FC<PrintLabelsDialogProps> = ({
             return false
 
         const progressIncrement = 100 / samples.length
-        const { width, length } = selectedLabelLayout
 
         setIsLabelGenerationInProgress(true)
 
         const labelsAsBase64 = await Promise.all(
             samples.map(async (sample) => {
-                const label = await api.generateLabelForSampleWithSize(
+                const label = await api.generateLabel(
                     sample.id,
-                    width,
-                    length
+                    selectedLabelLayout.id
                 )
 
                 setLabelGenerationProgress((prev) =>
@@ -197,7 +202,8 @@ const PrintLabelsDialog: React.FC<PrintLabelsDialogProps> = ({
                     </MenuItem>
                     {labelLayouts[team]?.map((labelLayout, index) => (
                         <MenuItem value={labelLayout.id} key={index}>
-                            {labelLayout.width}mm x {labelLayout.length}mm
+                            {labelLayout.name} ({labelLayout.width}mm x{' '}
+                            {labelLayout.length}mm)
                         </MenuItem>
                     ))}
                 </Select>
@@ -229,6 +235,7 @@ const PrintLabelsDialog: React.FC<PrintLabelsDialogProps> = ({
 
                 <Button
                     variant='contained'
+                    onClick={onPrintButtonClick}
                     disabled={
                         isLabelGenerationInProgress ||
                         selectedPrinter === null ||
@@ -237,21 +244,34 @@ const PrintLabelsDialog: React.FC<PrintLabelsDialogProps> = ({
                 >
                     Print Labels
                 </Button>
-            </DialogContent>
-            <DialogContent>
-                {isLabelGenerationInProgress ? (
-                    <CircularProgressWithLabel
-                        value={labelGenerationProgress}
-                        key={'progress'}
-                    />
-                ) : (
-                    generatedLabelsAsBase64.map((label, index) => (
-                        <img
-                            src={`data:image/png;base64,${label}`}
-                            key={index}
+
+                <Paper
+                    className='generated-labels-container'
+                    sx={{
+                        border: `2px solid ${theme.palette.primary.main}`,
+                    }}
+                >
+                    {isLabelGenerationInProgress ? (
+                        <CircularProgressWithLabel
+                            value={labelGenerationProgress}
+                            key={'progress'}
                         />
-                    ))
-                )}
+                    ) : (
+                        <ImageList>
+                            {generatedLabelsAsBase64.map((label, index) => (
+                                <ImageListItem
+                                    key={index}
+                                    sx={{ border: '2px solid black' }}
+                                >
+                                    <img
+                                        src={`data:image/png;base64,${label}`}
+                                        alt={`Label ${index}`}
+                                    />
+                                </ImageListItem>
+                            ))}
+                        </ImageList>
+                    )}
+                </Paper>
             </DialogContent>
             <DialogActions>
                 <Button onClick={onDialogClose}>Close</Button>

@@ -3,8 +3,22 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { State, useActionCreators } from '../../redux'
 
-import { Button, Checkbox, Paper, Typography } from '@mui/material'
 import {
+    Box,
+    Button,
+    Checkbox,
+    FormControl,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
+    SelectChangeEvent,
+    Tab,
+    Tabs,
+} from '@mui/material'
+import {
+    Add,
     FormatBold,
     FormatBoldOutlined,
     FormatItalic,
@@ -12,7 +26,6 @@ import {
 } from '@mui/icons-material'
 
 import LabelText from './LabelText'
-import ListDisplay from '../ListDisplay'
 
 import qr_image from '../../images/basic_qr_code.png'
 
@@ -24,13 +37,13 @@ import {
 } from '../../api'
 
 import './styles.css'
+import CreateLabelDialog from '../CreateLabelDialog'
 
 const useAutoIncrement = (initialValue: number = 0) => {
-    const [value, setValue] = useState<number>(initialValue)
+    const value = useRef<number>(initialValue)
     const getValue = () => {
-        const newValue = value + 1
-        setValue(newValue)
-        return newValue
+        value.current = value.current + 1
+        return value.current
     }
 
     return getValue
@@ -58,7 +71,7 @@ interface LabelEditorProps {
 }
 
 const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
-    labelSize: initialLabelSize = { width: 62, length: 90 },
+    labelSize: initialLabelSize = { width: 0, length: 0 },
     toolbarComponents,
     footerComponents,
     editorSize = { width: 'auto', height: 'auto' },
@@ -70,6 +83,7 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
         x: 0,
         y: 0,
     })
+
     const autoId = useAutoIncrement()
 
     const [labelSize, setLabelSize] = useState<{
@@ -84,6 +98,9 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
     const [qrCodeID, setQRCodeID] = useState<string | null>(null)
 
     const { team, labels } = useSelector((state: State) => state)
+
+    const [currentlyEditingLabel, setCurrentlyEditingLabel] =
+        useState<TeamLabel | null>(null)
 
     const [selectedEntityID, setSelectedEntityID] = useState<string | null>(
         null
@@ -106,14 +123,14 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
 
     const [newItalicStatus, setNewItalicStatus] = useState<boolean>(false)
 
-    const { createLabel, /* deleteLabel */ fetchTeamsLabels } =
+    const { createLabel, deleteLabel, updateLabel, fetchTeamsLabels } =
         useActionCreators()
 
     const onSave = async (label: CreateTeamLabelRequirements) => {
         if (overrideOnSave) {
             return overrideOnSave(label)
         }
-        createLabel(label)
+        updateLabel(currentlyEditingLabel!.id, label)
     }
 
     useEffect(() => {
@@ -367,6 +384,7 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
         const labelData = Object.values(entities)
         const label: CreateTeamLabelRequirements = {
             team_name: team,
+            name: 'Untitled',
             width: labelSize.width as number,
             length: labelSize.length as number,
             data: labelData,
@@ -424,48 +442,58 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
         })
     }
 
+    const [selectedLabelID, setSelectedLabelID] = useState<string | null>(null)
+
+    const onSelectedLabelChange = (event: SelectChangeEvent<string | null>) => {
+        if (event.target.value === null || event.target.value === '') return
+        const newLabelID = event.target.value as string
+        setSelectedLabelID(newLabelID)
+    }
+
+    useEffect(() => {
+        const label = labels[team]?.find(
+            (label) => label.id === Number(selectedLabelID!)
+        )
+        if (label === undefined) return
+        loadLabel(label)
+        setCurrentlyEditingLabel(label)
+    }, [selectedLabelID])
+
+    const [createLabelDialogOpen, setCreateLabelDialogOpen] = useState(false)
+
     return (
         <Paper className='label-selector-and-editor' elevation={1}>
-            <ListDisplay
-                paperProps={{
-                    elevation: 2,
-                }}
-                items={labels[team] ?? []}
-                header={
-                    <Typography variant='h6' color='primary'>
-                        Select a label size
-                    </Typography>
-                }
-                itemFormatter={(label, index) => {
-                    return {
-                        content: (
-                            <Typography variant='body1' color='primary'>
-                                {label.width}mm x {label.length}mm
-                            </Typography>
-                        ),
-                        clickable: true,
-                    }
-                }}
-                onListItemClick={(item, value) => {
-                    loadLabel(value)
-                }}
-                onListItemSubmit={(value: string) => {
-                    const [width, length] = value.match(/(\d+)+/g) ?? []
-                    if (width === undefined || length === undefined) return
+            <Box sx={{ minWidth: '100px' }}>
+                <FormControl fullWidth>
+                    <InputLabel id='select-label-label'>Label</InputLabel>
+                    <Select
+                        labelId='select-label-label'
+                        onChange={onSelectedLabelChange}
+                        value={selectedEntityID}
+                        sx={{
+                            maxHeight: '50px',
+                        }}
+                    >
+                        <MenuItem value=''>Select a label to edit</MenuItem>
+                        {(labels[team] ?? []).map((label, index) => (
+                            <MenuItem value={`${label.id}`}>
+                                {label.width}mm x {label.length}mm -{' '}
+                                {label.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            </Box>
 
-                    createLabel({
-                        team_name: team,
-                        width: parseInt(width),
-                        length: parseInt(length),
-                        data: [],
-                    })
-                }}
-                onListItemDelete={(item, value) => {
-                    // deleteLabel(value);
-                }}
-                editable
-                // deletable
+            <IconButton onClick={() => setCreateLabelDialogOpen(true)}>
+                <Add />
+            </IconButton>
+
+            <CreateLabelDialog
+                open={createLabelDialogOpen}
+                onClose={() => setCreateLabelDialogOpen(false)}
             />
+
             <Paper
                 className='label-editor-container'
                 style={{
@@ -554,7 +582,6 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
                         height: `${labelSize.width}${
                             typeof labelSize.width === 'number' ? 'mm' : ''
                         }`,
-                        background: '#ededed',
                     }}
                 >
                     {entityIDs.map((entityID) => {

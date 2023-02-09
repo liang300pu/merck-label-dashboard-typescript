@@ -14,6 +14,9 @@ import {
     MenuItem,
     IconButton,
     SelectChangeEvent,
+    InputLabel,
+    FormControl,
+    FormHelperText,
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import CreateIcon from '@mui/icons-material/Create'
@@ -103,21 +106,33 @@ const NavBar: React.FC = () => {
                             Edit Teams
                         </Button>
                     </Link>
-                    <Select
-                        variant='outlined'
-                        size='small'
-                        value={team}
-                        onChange={onTeamChange}
-                    >
-                        <MenuItem value={''} color='inherit'>
-                            Select a team
-                        </MenuItem>
-                        {teams.map((team, index) => (
-                            <MenuItem key={index} value={team.name}>
-                                {team.name}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                    <Link to='/editor' className='link-button'>
+                        <Button variant={navigationButtonVariant}>
+                            Label Editor
+                        </Button>
+                    </Link>
+
+                    <Box sx={{ minWidth: '100px' }}>
+                        <FormControl fullWidth>
+                            <InputLabel id='select-team-label'>Team</InputLabel>
+                            <Select
+                                size='small'
+                                value={team}
+                                onChange={onTeamChange}
+                                labelId='select-team-label'
+                                label='Team'
+                            >
+                                <MenuItem value={''} color='inherit' disabled>
+                                    Select a team
+                                </MenuItem>
+                                {teams.map((team, index) => (
+                                    <MenuItem key={index} value={team.name}>
+                                        {team.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Box>
                 </div>
             </Toolbar>
         </AppBar>

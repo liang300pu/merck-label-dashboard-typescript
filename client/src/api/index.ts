@@ -10,6 +10,7 @@ import {
     CreateTeamFieldRequirements,
     TeamLabel,
     CreateTeamLabelRequirements,
+    UpdateTeamLabelRequirements,
     Printer,
     CreatePrinterRequirements,
     UpdatePrinterRequirements,
@@ -205,7 +206,7 @@ async function deleteTeamField(field_id: number | string): Promise<TeamField> {
 
 // ----------------------------------------
 
-// * @route /:team/labels
+// * @route /labe;s
 
 async function getAllLabels(): Promise<Record<string, TeamLabel[]>> {
     const { data: labels } = await axios.get(baseLabelsURL)
@@ -213,58 +214,54 @@ async function getAllLabels(): Promise<Record<string, TeamLabel[]>> {
 }
 
 async function getTeamLabels(team: string): Promise<TeamLabel[]> {
-    const { data: labels } = await axios.get(`${baseLabelsURL}/${team}`)
+    const { data: labels } = await axios.get(`${baseLabelsURL}/?team=${team}`)
     return labels
 }
 
-async function getTeamLabel(
-    team: string,
-    width: number,
-    length: number
-): Promise<TeamLabel> {
-    const { data: label } = await axios.get(`${baseLabelsURL}/${team}/`, {
+async function getLabel(id: number): Promise<TeamLabel> {
+    const { data: label } = await axios.get(`${baseLabelsURL}/`, {
         params: {
-            width,
-            length,
+            id,
         },
     })
     return label
 }
 
-async function createTeamLabel(
-    team: string,
+async function createLabel(
     label: CreateTeamLabelRequirements
 ): Promise<TeamLabel> {
-    const { data: newLabel } = await axios.post(`${baseLabelsURL}/${team}`, {
-        ...label,
-        team_name: team,
-    })
+    const { data: newLabel } = await axios.post(`${baseLabelsURL}/`, label)
     return newLabel
 }
 
-async function generateSampleLabelWithSize(
+async function deleteLabel(id: number): Promise<TeamLabel> {
+    const { data: deletedLabel } = await axios.delete(`${baseLabelsURL}/${id}`)
+    return deletedLabel
+}
+
+async function updateLabel(
+    id: number,
+    label: UpdateTeamLabelRequirements
+): Promise<TeamLabel> {
+    const { data: updatedLabel } = await axios.patch(
+        `${baseLabelsURL}/${id}`,
+        label
+    )
+    return updatedLabel
+}
+
+async function generateLabel(
     sample_id: string,
-    width: number,
-    length: number
+    layout_id: number
 ): Promise<string> {
     const { data: base64image } = await axios.post(
         `${baseLabelsURL}/generate`,
         {
             sample_id,
-            width,
-            length,
+            layout_id,
         }
     )
     return base64image
-}
-
-async function generateAllUniqueLabelsForSample(
-    sample_id: string
-): Promise<Sample> {
-    const { data: sample } = await axios.post(`${baseLabelsURL}/generate`, {
-        sample_id,
-    })
-    return sample
 }
 
 async function printLabels(
@@ -339,10 +336,12 @@ export {
     updateTeamField,
     deleteTeamField,
     getAllLabels,
-    getTeamLabel,
+    getLabel,
     getTeamLabels,
-    createTeamLabel,
-    generateSampleLabelWithSize as generateLabelForSampleWithSize,
+    createLabel,
+    deleteLabel,
+    updateLabel,
+    generateLabel,
     printLabels,
     getAllPrinters,
     getPrinter,

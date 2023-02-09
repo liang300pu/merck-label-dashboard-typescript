@@ -65,15 +65,15 @@ export interface TeamLabelEntity {
 export interface TeamLabel {
     id: number
     team_name: string
+    name: string
     width: number
     length: number
     data: TeamLabelEntity[]
 }
 
-export type CreateTeamLabelRequirements = Pick<
-    TeamLabel,
-    'team_name' | 'width' | 'length' | 'data'
->
+export type CreateTeamLabelRequirements = Omit<TeamLabel, 'id'>
+
+export type UpdateTeamLabelRequirements = Omit<TeamLabel, 'id'>
 
 export interface Printer {
     ip: string

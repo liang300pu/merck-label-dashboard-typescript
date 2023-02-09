@@ -291,10 +291,27 @@ export const fetchTeamsLabels = (team: string) => {
 
 export const createLabel = (label: api.CreateTeamLabelRequirements) => {
     return async (dispatch: Dispatch<LabelAction>) => {
-        const data = await api.createTeamLabel(label.team_name, label)
+        const data = await api.createLabel(label)
         dispatch({
             type: LabelsActionType.CREATE,
             payload: data,
         })
+    }
+}
+
+export const updateLabel = (
+    id: number,
+    label: api.UpdateTeamLabelRequirements
+) => {
+    return async (dispatch: Dispatch<LabelAction>) => {
+        const data = await api.updateLabel(id, label)
+        fetchTeamsLabels(data.team_name)(dispatch)
+    }
+}
+
+export const deleteLabel = (id: number) => {
+    return async (dispatch: Dispatch<LabelAction>) => {
+        const data = await api.deleteLabel(id)
+        fetchTeamsLabels(data.team_name)(dispatch)
     }
 }
