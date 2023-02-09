@@ -3,7 +3,7 @@
     --data-grid-expired-opacity: 0.8;
 }
 
-.data-grid-container {  
+.data-grid-container {
     height: 75vh;
     display: flex;
     flex-flow: column;
@@ -20,7 +20,7 @@
     margin: auto;
     margin-bottom: 10px;
     width: 30%;
-    height: 30%;    
+    height: 30%;
 }
 
 .generated-labels-container {

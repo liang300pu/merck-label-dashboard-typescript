@@ -1,216 +1,126 @@
-import { 
-    AppBar, 
-    Typography, 
-    Container, 
-    Box, 
-    Toolbar, 
-    IconButton, 
-    Drawer, 
-    Divider, 
-    List, 
-    ListItem, 
-    ListItemButton, 
-    ListItemIcon, 
-    Select, 
-    MenuItem 
-} from '@mui/material';
-import MenuIcon from "@mui/icons-material/Menu";
-import CreateIcon from '@mui/icons-material/Create';
-import PageviewIcon from '@mui/icons-material/Pageview';
-import FormatShapesIcon from '@mui/icons-material/FormatShapes';
+import {
+    AppBar,
+    Typography,
+    Box,
+    Toolbar,
+    Divider,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    Button,
+    Theme,
+    Select,
+    MenuItem,
+    IconButton,
+    SelectChangeEvent,
+} from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu'
+import CreateIcon from '@mui/icons-material/Create'
+import FormatShapesIcon from '@mui/icons-material/FormatShapes'
 
-import { Link } from 'react-router-dom';
-import "./styles.css";
-import React, { useEffect, useState } from 'react';
-import { EditAttributes, Home } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
-import { State, useActionCreators, useFetchAll } from '../../redux';
+import { Link } from 'react-router-dom'
+import './styles.css'
+import React, { useEffect, useState } from 'react'
+import { EditAttributes, Home } from '@mui/icons-material'
+import { useSelector } from 'react-redux'
+import {
+    State,
+    useActionCreators,
+    useFetchAll,
+    useFetchTeam,
+} from '../../redux'
+import { useTheme } from '@mui/styles'
 
-const NavBar: React.FC<React.PropsWithChildren> = ({ children }: React.PropsWithChildren) => {
-    const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+const NavBar: React.FC = () => {
+    const theme = useTheme<Theme>()
 
-    const toggleDrawer = () => {
-        setIsSideBarOpen(!isSideBarOpen);
-    }
+    const fetchAll = useFetchAll()
 
-    const Sidebar = () => {
-        return (
-            <Box
-                sx={{ width: 300 }}
-                role="presentation"
-                onClick={toggleDrawer}
-                onKeyDown={toggleDrawer}
-            >
-                <List>
-                    <Link to="/" className="link-button">
-                        <ListItem key={"home"} disablePadding>
-                            <ListItemButton
-                                style={{ width: '100%' }}
-                            >
-                                
-                                    <ListItemIcon>
-                                        <Home />
-                                        <Typography variant="h6" color="primary">
-                                            Home
-                                        </Typography>
-                                    </ListItemIcon>
-                            </ListItemButton>
-                        </ListItem>
-                    </Link>
+    const { team, teams } = useSelector((state: State) => ({
+        team: state.team,
+        teams: state.teams,
+    }))
 
-                    <Link to="/editor" className="link-button">
-                        <ListItem key={"editor"} disablePadding>
-                            <ListItemButton style={{ textAlign: "center" }}>
-                                
-                                    <ListItemIcon>
-                                        <FormatShapesIcon />
-                                        <Typography variant="h6" align="center" color="primary" component="div">
-                                            Label Editor
-                                        </Typography>
-                                    </ListItemIcon>
-                                
-                            </ListItemButton>
-                        </ListItem>
-                    </Link>
-                </List>
-
-                <Divider /> 
-
-                <List>
-                    <Link to="/samples/create" className="link-button">
-                        <ListItem key={"create-sample"} disablePadding>
-                            <ListItemButton>
-                                
-                                    <ListItemIcon>
-                                        <CreateIcon />
-                                        <Typography variant="h6" color="primary">
-                                            Create Sample
-                                        </Typography>
-                                    </ListItemIcon>
-                                
-                            </ListItemButton>
-                        </ListItem>
-                    </Link>
-
-                    <Link to="/samples" className="link-button">
-                        <ListItem key={"view-team-samples"} disablePadding>
-                            <ListItemButton>
-                                
-                                    <ListItemIcon>
-                                        <PageviewIcon />
-                                        <Typography variant="h6" color="primary">
-                                            View Samples
-                                        </Typography>
-                                    </ListItemIcon>
-                                
-                            </ListItemButton>
-                        </ListItem>
-                    </Link>
-
-                    <Link to="/samples/deleted" className="link-button">
-                        <ListItem key={"view-deleted-samples"} disablePadding>
-                            <ListItemButton>
-                                
-                                    <ListItemIcon>
-                                        <PageviewIcon />
-                                        <Typography variant="h6" color="primary">
-                                            View Deleted Samples
-                                        </Typography>
-                                    </ListItemIcon>
-                                
-                            </ListItemButton>
-                        </ListItem>
-                    </Link>
-
-                    <Link to="/fields" className="link-button">
-                      <ListItem key={"edit-team-fields"} disablePadding>
-                            <ListItemButton>
-                                
-                                    <ListItemIcon>
-                                        <EditAttributes />
-                                        <Typography variant="h6" color="primary">
-                                            Edit Team Fields
-                                        </Typography>
-                                    </ListItemIcon>
-                                
-                            </ListItemButton>
-                        </ListItem>
-                    </Link>
-                </List>
-            </Box>
-        )
-    }
-
-    const fetchAll = useFetchAll();
-    const state = useSelector((state: State) => state);
-    const { 
-        setTeam, 
-    } = useActionCreators();
+    const { setTeam } = useActionCreators()
+    const fetchTeam = useFetchTeam()
 
     useEffect(() => {
-        fetchAll();
-        const lsTeam = localStorage.getItem("team");
-        if (lsTeam) {
-            setTeam(lsTeam);
-        }
-    }, []);
+        fetchAll()
+    }, [])
 
-    const onTeamChange = (event) => {
-        // Replace fetch all with only fetching the current teams
-        fetchAll();
-        localStorage.setItem("team", event.target.value);
-        setTeam(event.target.value);
+    const onTeamChange = (event: SelectChangeEvent<string>) => {
+        const selectedTeam = event.target.value
+        // Sets the current team in the redux store
+        setTeam(selectedTeam)
+        // Fetches all the information for a team, includes samples, fields, label layouts.
+        fetchTeam(selectedTeam)
     }
 
-    return (        
-        <Container className="nav-container">
-            <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static" color="inherit" style={{ padding: '10px', margin: '10px' }}>
-                    <Toolbar className="nav-toolbar">
-                        <React.Fragment key={"sidebar"}>
-                            <IconButton
-                                size="large"
-                                edge="start"
-                                aria-label="menu"
-                                onClick={toggleDrawer} 
-                                onKeyDown={toggleDrawer}
-                            >
-                                <MenuIcon />
-                            </IconButton>   
-                            <Drawer
-                                anchor={"left"}
-                                open={isSideBarOpen}
-                                onClose={toggleDrawer}
-                            >
-                                <Sidebar />
-                            </Drawer>   
-                        </React.Fragment>
+    // Makes it easy to change the variant of the navigation buttons
+    const navigationButtonVariant: 'text' | 'outlined' | 'contained' =
+        'outlined'
 
-                        <Typography variant="h4" align="center" color="primary" component="div">
-                            Merck Label Dashboard
-                        </Typography>
-
-                        <div> 
-                            <Select
-                                value={state.team}
-                                onChange={(event) => onTeamChange(event)}
-                            >
-                                {
-                                    state.teams.map((team, _) => 
-                                        <MenuItem
-                                            key={_}
-                                            value={team.name}
-                                        >
-                                            {team.name}
-                                        </MenuItem>
-                                    )
-                                }
-                            </Select>
-                        </div>
-                    </Toolbar>
-                </AppBar>
-            </Box>
-        </Container>
+    return (
+        <AppBar
+            color='inherit'
+            className='nav-appbar'
+            variant='elevation'
+            position='static'
+            sx={{ borderBottom: `4px solid ${theme.palette.primary.main}` }}
+        >
+            <Toolbar className='nav-toolbar'>
+                <Typography
+                    variant='h2'
+                    color='primary'
+                    sx={{ fontWeight: '1' }}
+                >
+                    Merck Label Dashboard
+                </Typography>
+                <div className='nav-navigation-buttons-container'>
+                    <Link to='/' className='link-button'>
+                        <IconButton>
+                            <Home />
+                        </IconButton>
+                    </Link>
+                    <Link to='/samples' className='link-button'>
+                        <Button variant={navigationButtonVariant}>
+                            View Samples
+                        </Button>
+                    </Link>
+                    <Link to='/samples/create' className='link-button'>
+                        <Button variant={navigationButtonVariant}>
+                            Create Sample
+                        </Button>
+                    </Link>
+                    <Link to='/samples/deleted' className='link-button'>
+                        <Button variant={navigationButtonVariant}>
+                            View Deleted Samples
+                        </Button>
+                    </Link>
+                    <Link to='/fields' className='link-button'>
+                        <Button variant={navigationButtonVariant}>
+                            Edit Teams
+                        </Button>
+                    </Link>
+                    <Select
+                        variant='outlined'
+                        size='small'
+                        value={team}
+                        onChange={onTeamChange}
+                    >
+                        <MenuItem value={''} color='inherit'>
+                            Select a team
+                        </MenuItem>
+                        {teams.map((team, index) => (
+                            <MenuItem key={index} value={team.name}>
+                                {team.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </div>
+            </Toolbar>
+        </AppBar>
     )
 }
 

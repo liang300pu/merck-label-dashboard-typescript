@@ -1,13 +1,13 @@
-import DeletedSamplesTable from "../components/DeletedSamplesTable"
-import NavBar from "../components/NavBar";
+import DeletedSamplesTable from '../components/DeletedSamplesTable'
+import NavBar from '../components/NavBar'
 
 const ViewDeletedSamplesPage = () => {
     return (
         <>
-            <NavBar/>
+            <NavBar />
             <DeletedSamplesTable />
         </>
     )
 }
 
-export default ViewDeletedSamplesPage;
+export default ViewDeletedSamplesPage

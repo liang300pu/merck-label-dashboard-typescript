@@ -1,18 +1,15 @@
-import LabelEditor from "../components/LabelEditor";
-import NavBar from "../components/NavBar";
-
+import LabelEditor from '../components/LabelEditor'
+import NavBar from '../components/NavBar'
 
 const LabelEditorPage = () => {
-	
-	return (
+    return (
         <>
             <NavBar />
             <LabelEditor
-                editorSize={{ width: 'max-content', height: '60vh'}}
+                editorSize={{ width: 'max-content', height: '60vh' }}
             />
         </>
-	);
-
+    )
 }
 
-export default LabelEditorPage;
+export default LabelEditorPage

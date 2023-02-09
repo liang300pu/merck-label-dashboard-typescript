@@ -19,7 +19,6 @@ model Sample {
     // ------------------------------------------------
 
     // The team that the sample belongs to
-    team            Team     @relation(fields: [team_name], references: [name])
     team_name       String
 
     // The "unstructured data" of the sample
@@ -35,12 +34,6 @@ model Team {
     // The team name is the primary key
     name   String @id @unique
 
-    samples Sample[] 
-
-    fields  TeamField[]
-
-    labels  Label[]
-
     // This maps to the table name in the database.
     // The model is what prisma will use on the client.
     // - i.e. prisma.team.findMany()
@@ -48,7 +41,6 @@ model Team {
 }
 
 model TeamField {
-    team         Team    @relation(fields: [team_name], references: [name])
     team_name    String 
 
                          // @unique was causing some issues on frontend
@@ -95,7 +87,6 @@ model Printer {
 model Label {
     id        Int    @id @default(autoincrement()) @unique
 
-    team      Team   @relation(fields: [team_name], references: [name])
     team_name String // The team that the label belongs to
 
     width     Int    // The width of the label in mm

@@ -6,72 +6,73 @@
  * - update
  */
 
-import { RequestHandler } from "express";
-import prisma from "../db";
+import { RequestHandler } from 'express'
+import prisma from '../db'
 
 export const getPrinters: RequestHandler = async (req, res) => {
-    const printers = await prisma.printer.findMany();
+    const printers = await prisma.printer.findMany()
 
-    res.status(200).json(printers);
+    res.status(200).json(printers)
 }
 
 export const getPrinter: RequestHandler = async (req, res) => {
-    const { ip } = req.params;
+    const { ip } = req.params
 
     const printer = await prisma.printer.findUnique({
         where: {
-            ip
-        }
-    });
+            ip,
+        },
+    })
 
-    if (!printer) return res.status(404).json({ message: `Printer "${ip}" not found` });
+    if (!printer)
+        return res.status(404).json({ message: `Printer "${ip}" not found` })
 
-    res.status(200).json(printer);
+    res.status(200).json(printer)
 }
 
 export const createPrinter: RequestHandler = async (req, res) => {
-    const { ip, name, location } = req.body;
+    const { ip, name, location } = req.body
 
     const printer = await prisma.printer.create({
         data: {
             ip,
             name,
             location,
-        }
-    });
+        },
+    })
 
-    res.status(201).json(printer);
+    res.status(201).json(printer)
 }
 
 export const deletePrinter: RequestHandler = async (req, res) => {
-    const { ip } = req.params;
+    const { ip } = req.params
 
     const printer = await prisma.printer.delete({
         where: {
-            ip
-        }
-    });
+            ip,
+        },
+    })
 
     if (!printer)
-        return res.status(404).json({ message: `Printer "${ip}" not found` });
+        return res.status(404).json({ message: `Printer "${ip}" not found` })
 
-    res.status(200).json(printer);
+    res.status(200).json(printer)
 }
 
 export const updatePrinter: RequestHandler = async (req, res) => {
-    const { ip } = req.params;
-    const { ip: newIP, name, location } = req.body;
+    const { ip } = req.params
+    const { ip: newIP, name, location } = req.body
 
     const printer = await prisma.printer.update({
         where: {
-            ip
+            ip,
         },
         data: {
             ip: newIP,
             name,
-            location
-        }
-    });
+            location,
+        },
+    })
 
-    res.status(200).json(printer);
+    res.status(200).json(printer)
 }

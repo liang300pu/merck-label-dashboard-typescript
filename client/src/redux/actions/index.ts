@@ -1,141 +1,149 @@
-import { 
+import {
     FieldsActionType,
-    PrinterActionType, 
-    SampleActionType, 
-    TeamActionType, 
+    PrinterActionType,
+    SampleActionType,
+    TeamActionType,
     TeamsActionType,
     LabelsActionType,
-    DeletedSampleActionType
-} from "../action-types";
+    DeletedSampleActionType,
+} from '../action-types'
 
-import { 
-    Sample, 
-    Printer, 
-    Team, 
-    TeamField,
-    TeamLabel
-} from "../../api/types";
+import { Sample, Printer, Team, TeamField, TeamLabel } from '../../api/types'
 
 export interface PrinterFetchAllAction {
-    type: PrinterActionType.FETCH_ALL;
-    payload: Printer[];
+    type: PrinterActionType.FETCH_ALL
+    payload: Printer[]
 }
 
 export interface PrinterCreateAction {
-    type: PrinterActionType.CREATE;
-    payload: Printer;
+    type: PrinterActionType.CREATE
+    payload: Printer
 }
 
 export interface PrinterUpdateAction {
-    type: PrinterActionType.UPDATE;
-    payload: Printer;
+    type: PrinterActionType.UPDATE
+    payload: Printer
 }
 
-export type PrinterAction = PrinterFetchAllAction | PrinterCreateAction | PrinterUpdateAction;
+export type PrinterAction =
+    | PrinterFetchAllAction
+    | PrinterCreateAction
+    | PrinterUpdateAction
 
 export interface FetchTeamsSamplesAction {
-    type: SampleActionType.FETCH_TEAM;
+    type: SampleActionType.FETCH_TEAM
     payload: {
-        team: string;
-        samples: Sample[];
-    };
+        team: string
+        samples: Sample[]
+    }
 }
 
 export interface FetchAllSamplesAction {
-    type: SampleActionType.FETCH_ALL,
+    type: SampleActionType.FETCH_ALL
     payload: {
         [key: string]: Sample[]
     }
 }
 
 export interface SampleCreateAction {
-    type: SampleActionType.CREATE;
+    type: SampleActionType.CREATE
     payload: {
-        team: string;
-        sample: Sample;
-    };
+        team: string
+        sample: Sample
+    }
 }
 
-export type SampleAction = FetchTeamsSamplesAction | FetchAllSamplesAction | SampleCreateAction;
-
+export type SampleAction =
+    | FetchTeamsSamplesAction
+    | FetchAllSamplesAction
+    | SampleCreateAction
 
 export interface FetchAllDeletedSamplesAction {
-    type: DeletedSampleActionType.FETCH_ALL;
-    payload: Record<string, Sample[]>;
+    type: DeletedSampleActionType.FETCH_ALL
+    payload: Record<string, Sample[]>
 }
 
 export interface FetchTeamDeletedSamplesAction {
-    type: DeletedSampleActionType.FETCH_TEAM;
+    type: DeletedSampleActionType.FETCH_TEAM
     payload: {
-        team: string;
-        samples: Sample[];
-    };
+        team: string
+        samples: Sample[]
+    }
 }
 
-export type DeletedSamplesAction = FetchAllDeletedSamplesAction | FetchTeamDeletedSamplesAction;
+export type DeletedSamplesAction =
+    | FetchAllDeletedSamplesAction
+    | FetchTeamDeletedSamplesAction
 
 export interface SetTeamAction {
-    type: TeamActionType.SET_TEAM;
-    payload: string;
+    type: TeamActionType.SET_TEAM
+    payload: string
 }
 
-export type TeamAction = SetTeamAction;
+export type TeamAction = SetTeamAction
 
 export interface FetchAllTeamsAction {
-    type: TeamsActionType.FETCH_ALL;
-    payload: Team[];
+    type: TeamsActionType.FETCH_ALL
+    payload: Team[]
 }
 
 export interface CreateTeamAction {
-    type: TeamsActionType.CREATE;
-    payload: Team;
+    type: TeamsActionType.CREATE
+    payload: Team
 }
 
-export type TeamsAction = FetchAllTeamsAction | CreateTeamAction;
+export type TeamsAction = FetchAllTeamsAction | CreateTeamAction
 
 export interface FetchAllFieldsAction {
-    type: FieldsActionType.FETCH_ALL;
+    type: FieldsActionType.FETCH_ALL
     payload: {
-        [key: string]: TeamField[];
-    };
+        [key: string]: TeamField[]
+    }
 }
 
 export interface FetchTeamsFieldsAction {
-    type: FieldsActionType.FETCH_TEAM;
+    type: FieldsActionType.FETCH_TEAM
     payload: {
-        team: string;
-        fields: TeamField[];
-    };
+        team: string
+        fields: TeamField[]
+    }
 }
 
 export interface CreateFieldAction {
-    type: FieldsActionType.CREATE;
-    payload: TeamField;
+    type: FieldsActionType.CREATE
+    payload: TeamField
 }
 
 export interface UpdateFieldAction {
-    type: FieldsActionType.UPDATE;
-    payload: TeamField;
+    type: FieldsActionType.UPDATE
+    payload: TeamField
 }
 
-export type FieldAction = FetchAllFieldsAction | FetchTeamsFieldsAction | CreateFieldAction | UpdateFieldAction;
+export type FieldAction =
+    | FetchAllFieldsAction
+    | FetchTeamsFieldsAction
+    | CreateFieldAction
+    | UpdateFieldAction
 
 export interface FetchAllLabelsAction {
-    type: LabelsActionType.FETCH_ALL;
-    payload: Record<string, TeamLabel[]>;
+    type: LabelsActionType.FETCH_ALL
+    payload: Record<string, TeamLabel[]>
 }
 
 export interface FetchTeamsLabelsAction {
-    type: LabelsActionType.FETCH_TEAM;
+    type: LabelsActionType.FETCH_TEAM
     payload: {
-        team: string;
-        labels: TeamLabel[];
-    };
+        team: string
+        labels: TeamLabel[]
+    }
 }
 
 export interface CreateLabelAction {
-    type: LabelsActionType.CREATE;
-    payload: TeamLabel;
+    type: LabelsActionType.CREATE
+    payload: TeamLabel
 }
 
-export type LabelAction = FetchAllLabelsAction | FetchTeamsLabelsAction | CreateLabelAction;
+export type LabelAction =
+    | FetchAllLabelsAction
+    | FetchTeamsLabelsAction
+    | CreateLabelAction

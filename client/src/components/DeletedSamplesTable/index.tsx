@@ -1,47 +1,39 @@
-import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
 
-import { 
-    DataGrid, 
-    GridColDef, 
-    GridRowId, 
-    GridToolbar, 
-    GridToolbarContainer 
-} from "@mui/x-data-grid";
-import { Button } from "@mui/material";
-import { 
-    Delete, 
-    NoteAdd, 
-    Refresh,
-    History
-} from "@mui/icons-material";
+import {
+    DataGrid,
+    GridColDef,
+    GridRowId,
+    GridToolbar,
+    GridToolbarContainer,
+} from '@mui/x-data-grid'
+import { Button } from '@mui/material'
+import { Delete, NoteAdd, Refresh, History } from '@mui/icons-material'
 
-import { DateTime } from "luxon";
+import { DateTime } from 'luxon'
 
-import { Sample } from "../../api";
-import { State, useActionCreators } from "../../redux";
+import { Sample } from '../../api'
+import { State, useActionCreators } from '../../redux'
 
-import "./styles.css"
+import './styles.css'
 
 interface SamplesTableToolbarProps {
-    selectedSamples: Sample[];
+    selectedSamples: Sample[]
 }
 
 const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
-    selectedSamples
+    selectedSamples,
 }) => {
-
-    const team = useSelector((state: State) => state.team);
-    const {
-        fetchTeamsDeletedSamples,
-    } = useActionCreators();
+    const team = useSelector((state: State) => state.team)
+    const { fetchTeamsDeletedSamples } = useActionCreators()
 
     return (
         <GridToolbarContainer>
             <GridToolbar />
 
-            <Button 
-                startIcon={<Refresh />} 
+            <Button
+                startIcon={<Refresh />}
                 onClick={() => fetchTeamsDeletedSamples(team)}
             >
                 Refresh Samples
@@ -51,159 +43,179 @@ const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
 }
 
 const constantGridColumns: GridColDef[] = [
-    { 
-        field: "id", 
-        headerName: "ID", 
+    {
+        field: 'id',
+        headerName: 'ID',
         width: 150,
-        editable: false
+        editable: false,
     },
-    { 
-        field: "date_created", 
-        headerName: "Date Created", 
+    {
+        field: 'date_created',
+        headerName: 'Date Created',
         flex: 0.6,
-        type: "date",
+        type: 'date',
         editable: false,
         valueGetter(params) {
-            return DateTime.fromISO(params.value as string).toFormat("MM/dd/yyyy");
-        }
+            return DateTime.fromISO(params.value as string).toFormat(
+                'MM/dd/yyyy'
+            )
+        },
     },
-    { 
-        field: "date_modified", 
-        headerName: "Date Modified", 
+    {
+        field: 'date_modified',
+        headerName: 'Date Modified',
         flex: 0.6,
-        type: "date",
+        type: 'date',
         editable: false,
         valueGetter(params) {
-            return DateTime.fromISO(params.value as string).toFormat("MM/dd/yyyy");
-        }
+            return DateTime.fromISO(params.value as string).toFormat(
+                'MM/dd/yyyy'
+            )
+        },
     },
-    { 
-        field: "expiration_date", 
-        headerName: "Expiration Date", 
+    {
+        field: 'expiration_date',
+        headerName: 'Expiration Date',
         flex: 0.6,
-        type: "date",
+        type: 'date',
         editable: true,
         valueGetter(params) {
-            return DateTime.fromISO(params.value as string).toFormat("MM/dd/yyyy");
-        }
+            return DateTime.fromISO(params.value as string).toFormat(
+                'MM/dd/yyyy'
+            )
+        },
     },
-];
+]
 
 const DeletedSamplesTable: React.FC = () => {
-    
-    const { team, deletedSamples, fields } = useSelector((state: State) => { 
+    const { team, deletedSamples, fields } = useSelector((state: State) => {
         return {
             team: state.team,
             deletedSamples: state.deletedSamples,
-            fields: state.fields
+            fields: state.fields,
         }
-    });
+    })
 
-    const { 
+    const {
         fetchAllDeletedSamples,
         fetchAllFields,
         fetchTeamsDeletedSamples,
         fetchTeamsFields,
-     } = useActionCreators();
+    } = useActionCreators()
 
     useEffect(() => {
         if (team === undefined || team === '') {
-            fetchAllDeletedSamples();
-            fetchAllFields();
+            fetchAllDeletedSamples()
+            fetchAllFields()
         } else {
-            fetchTeamsDeletedSamples(team);
-            fetchTeamsFields(team);
+            fetchTeamsDeletedSamples(team)
+            fetchTeamsFields(team)
         }
-    }, []);
+    }, [])
 
     useEffect(() => {
-        if ((team === undefined || team === '') || (fields === undefined || fields[team] === undefined)) 
-            return;
-        generateDynamicGridColDefs();
-    }, [team, fields]);
+        if (
+            team === undefined ||
+            team === '' ||
+            fields === undefined ||
+            fields[team] === undefined
+        )
+            return
+        generateDynamicGridColDefs()
+    }, [team, fields])
 
-    const [dynamicGridColDefs, setDynamicGridColDefs] = useState<GridColDef[]>([]);
+    const [dynamicGridColDefs, setDynamicGridColDefs] = useState<GridColDef[]>(
+        []
+    )
 
     const generateDynamicGridColDefs = () => {
-        const dynamicGridColDefs: GridColDef[] = [];
+        const dynamicGridColDefs: GridColDef[] = []
 
-        if ((team === undefined || team === '') || (fields === undefined || fields[team] === undefined)) 
-            return setDynamicGridColDefs(dynamicGridColDefs);
-        
+        if (
+            team === undefined ||
+            team === '' ||
+            fields === undefined ||
+            fields[team] === undefined
+        )
+            return setDynamicGridColDefs(dynamicGridColDefs)
+
         for (const field of fields[team]) {
             dynamicGridColDefs.push({
                 field: field.name,
                 headerName: field.display_name,
                 flex: 1.0,
                 editable: true,
-                type: field.name.includes("date") ? "date" : "string",
+                type: field.name.includes('date') ? 'date' : 'string',
                 valueGetter(params) {
-                    if (field.name.includes("date")) { 
+                    if (field.name.includes('date')) {
                         if (params.row.data[field.name] === undefined) {
-                            params.row.data[field.name] = DateTime.now().toISO();
-                            return DateTime.now().toFormat("MM/dd/yyyy");
+                            params.row.data[field.name] = DateTime.now().toISO()
+                            return DateTime.now().toFormat('MM/dd/yyyy')
                         }
-                        return DateTime.fromISO(params.row.data[field.name]).toFormat("MM/dd/yyyy");
+                        return DateTime.fromISO(
+                            params.row.data[field.name]
+                        ).toFormat('MM/dd/yyyy')
                     }
-                    return params.row.data[field.name] ?? "N/A";
+                    return params.row.data[field.name] ?? 'N/A'
                 },
                 valueParser(value, params) {
                     if (params !== undefined) {
-                        if (field.name.includes("date")) {
-                            const date = DateTime.fromJSDate(value); 
-                            params.row.data[field.name] = date.toISO();
+                        if (field.name.includes('date')) {
+                            const date = DateTime.fromJSDate(value)
+                            params.row.data[field.name] = date.toISO()
                         } else {
-                            params.row.data[field.name] = value;
+                            params.row.data[field.name] = value
                         }
-                        return params.row.data[field.name];
+                        return params.row.data[field.name]
                     }
                 },
             })
         }
 
-        setDynamicGridColDefs(dynamicGridColDefs);
+        setDynamicGridColDefs(dynamicGridColDefs)
     }
 
-    const [selectedSamples, setSelectedSamples] = useState<Sample[]>([]);
+    const [selectedSamples, setSelectedSamples] = useState<Sample[]>([])
 
     const onSelectionChange = (newSelection: GridRowId[]) => {
-        const newSelectedSamples: Sample[] = [];
+        const newSelectedSamples: Sample[] = []
         for (const sample of deletedSamples[team] ?? []) {
             if (newSelection.includes(sample.id)) {
-                newSelectedSamples.push(sample);
+                newSelectedSamples.push(sample)
             }
         }
-        setSelectedSamples(newSelectedSamples);
+        setSelectedSamples(newSelectedSamples)
     }
 
-    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [itemsPerPage, setItemsPerPage] = useState(10)
 
     return (
         <>
-            <div
-                className="data-grid-container"
-            >
+            <div className='data-grid-container'>
                 <DataGrid
-                    className="data-grid"
+                    className='data-grid'
                     experimentalFeatures={{ newEditingApi: true }}
                     rows={deletedSamples[team] ?? []}
-                    columns={[constantGridColumns[0], ...dynamicGridColDefs, ...constantGridColumns.slice(1)]}
+                    columns={[
+                        constantGridColumns[0],
+                        ...dynamicGridColDefs,
+                        ...constantGridColumns.slice(1),
+                    ]}
                     onSelectionModelChange={onSelectionChange}
                     pageSize={itemsPerPage}
                     rowsPerPageOptions={[5, 10, 25, 50, 100]}
                     onPageSizeChange={(pageSize) => setItemsPerPage(pageSize)}
                     components={{
-                        Toolbar: SamplesTableToolbar
+                        Toolbar: SamplesTableToolbar,
                     }}
                     componentsProps={{
-                        toolbar: { selectedSamples }
+                        toolbar: { selectedSamples },
                     }}
                     checkboxSelection
                 />
             </div>
         </>
-    );
-
+    )
 }
 
-export default DeletedSamplesTable;
+export default DeletedSamplesTable

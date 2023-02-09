@@ -1,15 +1,13 @@
-import { TeamActionType } from "../action-types";
-import { TeamAction } from "../actions";
+import { TeamActionType } from '../action-types'
+import { TeamAction } from '../actions'
 
-const reducer = (state: string = "", action: TeamAction) => {
-
+const reducer = (state: string = '', action: TeamAction) => {
     switch (action.type) {
         case TeamActionType.SET_TEAM:
-            return action.payload;
+            return action.payload
         default:
-            return state;
+            return state
     }
-
 }
 
-export default reducer;
+export default reducer

@@ -1,0 +1,36 @@
+.teams-and-fields-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 60%;
+    padding: 10px;
+    margin: auto;
+    align-self: center;
+}
+
+.teams-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fields-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 75%;
+    min-height: 60vh;
+    padding: 10px;
+    margin: auto;
+    align-self: center;
+}
+
+.fields-inputs-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: max-content;
+}

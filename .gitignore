@@ -12,7 +12,5 @@
 
 /postgres-db
 
-/legacy-client-reference
-
 .vscode
 .DS_Store

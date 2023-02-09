@@ -1,9 +1,9 @@
-import { useParams } from "react-router-dom";
-import NavBar from "../components/NavBar";
-import SampleAuditTable from "../components/SampleAuditTable";
+import { useParams } from 'react-router-dom'
+import NavBar from '../components/NavBar'
+import SampleAuditTable from '../components/SampleAuditTable'
 
 const ViewSampleAuditPage = () => {
-    const { id } = useParams();
+    const { id } = useParams()
 
     return (
         <>
@@ -11,7 +11,6 @@ const ViewSampleAuditPage = () => {
             <SampleAuditTable sampleId={id as string} />
         </>
     )
-
 }
 
-export default ViewSampleAuditPage;
+export default ViewSampleAuditPage

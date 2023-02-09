@@ -1,31 +1,30 @@
-import { useEffect } from "react";
-import NavBar from "../components/NavBar";
-import { useFetchAll } from "../redux";
+import { useEffect } from 'react'
+import NavBar from '../components/NavBar'
+import { useFetchAll } from '../redux'
 
 const RootPage = () => {
-
     /**
      * Root page will fetch ALL data from the server and
      * populate the redux store with it.
      */
 
-    const fetchAll = useFetchAll();
+    const fetchAll = useFetchAll()
 
     useEffect(() => {
-        fetchAll();
-    }, []);
+        fetchAll()
+    }, [])
 
     return (
-        <> 
+        <>
             <NavBar />
         </>
     )
-
 }
 
-export default RootPage;
+export default RootPage
 
-{/* <div>
+{
+    /* <div>
 {
     state.samples.hasOwnProperty(state.team) ?
     state.samples[state.team].map((sample, _) => 
@@ -46,4 +45,5 @@ export default RootPage;
     )
     : <></>
 }
-</div> */}
+</div> */
+}

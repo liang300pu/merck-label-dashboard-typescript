@@ -1,29 +1,30 @@
-import { SampleAction } from "../actions";
-import { SampleActionType } from "../action-types";
-import { Sample } from "../../api/types";
+import { SampleAction } from '../actions'
+import { SampleActionType } from '../action-types'
+import { Sample } from '../../api/types'
 
-const reducer = (state: Record<string, Sample[]> = {}, action: SampleAction): { [key: string]: Sample[] } => {
-
+const reducer = (
+    state: Record<string, Sample[]> = {},
+    action: SampleAction
+): { [key: string]: Sample[] } => {
     switch (action.type) {
         case SampleActionType.FETCH_ALL:
-            return action.payload;
+            return action.payload
         case SampleActionType.FETCH_TEAM:
             return {
                 ...state,
-                [action.payload.team]: action.payload.samples
+                [action.payload.team]: action.payload.samples,
             }
         case SampleActionType.CREATE:
             return {
                 ...state,
                 [action.payload.team]: [
-                    ...state.samples[action.payload.team], 
-                    action.payload.sample
-                ]
+                    ...state.samples[action.payload.team],
+                    action.payload.sample,
+                ],
             }
         default:
-            return state;
+            return state
     }
-
 }
 
-export default reducer;
+export default reducer
