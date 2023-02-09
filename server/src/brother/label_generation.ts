@@ -56,14 +56,14 @@ export async function generateLabelImageWithLayoutAndSample(
     const entityData = layout.data as LabelLayoutDataType[]
 
     const qrCodeEntity = entityData.find((entity) => entity.text === '')
-    if (qrCodeEntity === undefined) {
-        throw new Error('No QR code entity found in the layout data')
+    var qrCodeBuffer: Buffer | undefined = undefined
+    if (qrCodeEntity !== undefined) {
+        var qrCodeSize = qrCodeEntity?.textSize ?? 50
+        qrCodeBuffer = await generateQRCodeImage(sample.id, {
+            width: qrCodeSize,
+            height: qrCodeSize,
+        })
     }
-    var qrCodeSize = qrCodeEntity?.textSize ?? 50
-    const qrCodeBuffer = await generateQRCodeImage(sample.id, {
-        width: qrCodeSize,
-        height: qrCodeSize,
-    })
 
     // This will hold all the styling information for our text
     // Here you can use all the CSS properties you would normally use in a stylesheet
@@ -153,6 +153,27 @@ export async function generateLabelImageWithLayoutAndSample(
     // We use sharp to composite the SVG and QR code on top of a white background.
     // We also convert the image to grayscale since the label printer only prints in black and white
     // and force the output to png since we need a raster image to generate the raster data for the printer.
+
+    if (qrCodeBuffer === undefined) {
+        return sharp({
+            create: {
+                width,
+                height,
+                channels: 4,
+                background: { r: 255, g: 255, b: 255, alpha: 1 },
+            },
+        })
+            .composite([
+                {
+                    input: svgBuffer,
+                    top: 0,
+                    left: 0,
+                },
+            ])
+            .grayscale()
+            .png()
+    }
+
     return sharp({
         create: {
             width,
@@ -169,8 +190,8 @@ export async function generateLabelImageWithLayoutAndSample(
             },
             {
                 input: qrCodeBuffer,
-                top: qrCodeEntity.position.y,
-                left: qrCodeEntity.position.x,
+                top: qrCodeEntity!.position.y,
+                left: qrCodeEntity!.position.x,
             },
         ])
         .grayscale()

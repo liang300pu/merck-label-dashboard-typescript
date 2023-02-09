@@ -2,29 +2,30 @@
 // Current idea is that only one label per size can be active at a time
 
 import express from 'express'
-import { 
-    getLabels,
+import {
     createLabel,
     getAllLabels,
     generateLabelImage,
     printLabels,
-    // deleteLabel,
-} from '../controllers/teams_labels';
+    getLabel,
+    deleteLabel,
+    updateLabel,
+} from '../controllers/teams_labels'
 
 const router = express.Router({
-    mergeParams: true
-});
+    mergeParams: true,
+})
 
-router.get('/', getAllLabels);
+router.get('/', getAllLabels)
 
-router.post('/generate', generateLabelImage);
+router.post('/generate', generateLabelImage)
 
-router.post('/print', printLabels);
+router.post('/print', printLabels)
 
-router.get('/:team', getLabels);
+router.post('/', createLabel)
 
-router.post('/:team', createLabel);
+router.get('/:id', getLabel)
+router.patch('/:id', updateLabel)
+router.delete('/:id', deleteLabel)
 
-// router.delete('/:id', deleteLabel);
-
-export default router;
+export default router

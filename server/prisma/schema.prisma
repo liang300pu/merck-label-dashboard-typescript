@@ -89,6 +89,7 @@ model Label {
 
     team_name String // The team that the label belongs to
 
+    name      String // The name of the label
     width     Int    // The width of the label in mm
     length    Int    // The length of the label in mm
     

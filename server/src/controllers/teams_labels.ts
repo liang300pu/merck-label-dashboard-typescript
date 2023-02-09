@@ -2,155 +2,215 @@ import { RequestHandler } from 'express'
 import prisma from '../db'
 import { Label } from '@prisma/client'
 import { generateLabelImageWithLayoutAndSample } from '../brother/label_generation'
-import path from 'path'
 import { sendLabelsToPrinter } from '../brother/ipp_printing'
 
 export const getAllLabels: RequestHandler = async (req, res) => {
-    const groupedLabels = await prisma.label.groupBy({
-        by: ['team_name', 'width', 'length'],
-        _max: {
-            id: true,
-        },
-    })
+    try {
+        const { team, width, length } = req.query
 
-    const labels = await prisma.label.findMany({
-        where: {
-            id: {
-                in: groupedLabels.map((label) => label._max.id!),
-            },
-        },
-    })
+        if (team && !(width || length)) {
+            const labels = await prisma.label.findMany({
+                where: {
+                    team_name: team as string,
+                },
+            })
+            return res.status(200).json(labels)
+        }
 
-    const teams = (await prisma.team.findMany()).map((team) => team.name)
+        if (team && width && length) {
+            const labels = await prisma.label.findMany({
+                where: {
+                    team_name: team as string,
+                    width: Number(width),
+                    length: Number(length),
+                },
+            })
 
-    const groupedByTeam: Record<string, Label[]> = {}
+            return res.status(200).json(labels)
+        }
 
-    for (const team of teams) {
-        groupedByTeam[team] = labels.filter((label) => label.team_name == team)
+        const labels = await prisma.label.findMany()
+
+        const teams = await prisma.team.findMany()
+
+        const groupedByTeam: Record<string, Label[]> = {}
+
+        for (const { name } of teams) {
+            groupedByTeam[name] = labels.filter(
+                (label) => label.team_name == name
+            )
+        }
+
+        res.status(200).json(groupedByTeam)
+    } catch (e: any) {
+        console.log(e)
+        res.status(500).json({ message: e.message })
     }
-
-    res.status(200).json(groupedByTeam)
 }
 
-export const getLabels: RequestHandler = async (req, res) => {
-    const { team } = req.params
+export const getLabel: RequestHandler = async (req, res) => {
+    try {
+        const { id } = req.params
 
-    const { width, length } = req.query
-
-    const whereQuery: any = {
-        team_name: team,
-    }
-
-    if (width && length) {
-        whereQuery.width = Number(width)
-        whereQuery.length = Number(length)
-    }
-
-    const labelGroups = await prisma.label.groupBy({
-        by: ['team_name', 'width', 'length'],
-        where: whereQuery,
-        _max: {
-            id: true,
-        },
-    })
-
-    if (labelGroups.length == 0) {
-        return res
-            .status(404)
-            .json({ message: `No labels found for team "${team}"` })
-    }
-
-    const labels = await prisma.label.findMany({
-        where: {
-            id: {
-                in: labelGroups.map((label) => label._max.id!),
+        const label = await prisma.label.findUnique({
+            where: {
+                id: Number(id),
             },
-        },
-    })
+        })
 
-    res.status(200).json(width && length ? labels[0] : labels)
+        if (label == null) {
+            return res
+                .status(404)
+                .json({ message: `No label found with id "${id}"` })
+        }
+
+        res.status(200).json(label)
+    } catch (e: any) {
+        console.log(e)
+        res.status(500).json({ message: e.message })
+    }
 }
 
 export const createLabel: RequestHandler = async (req, res) => {
-    const { team } = req.params
-    const { width, length, data } = req.body
+    try {
+        const { team_name, width, length, name, data } = req.body
 
-    const label = await prisma.label.create({
-        data: {
-            team_name: team,
-            width,
-            length,
-            data,
-        },
-    })
+        if (!team_name || !width || !length || !name) {
+            return res.status(400).json({
+                message:
+                    'To create a new label layout, you must specify the team name, width, length, name, and data of the label',
+            })
+        }
 
-    res.status(201).json(label)
+        const label = await prisma.label.create({
+            data: {
+                team_name,
+                name,
+                width,
+                length,
+                data: data ?? {},
+            },
+        })
+
+        res.status(201).json(label)
+    } catch (e: any) {
+        console.log(e)
+        res.status(500).json({ message: e.message })
+    }
 }
 
 export const generateLabelImage: RequestHandler = async (req, res) => {
-    var { team_name, sample_id, width, length } = req.body
+    try {
+        var { sample_id, layout_id } = req.body
 
-    const sample = await prisma.sample.findFirst({
-        where: {
-            id: sample_id,
-        },
-    })
-
-    if (team_name == null && sample == null) {
-        return res
-            .status(404)
-            .json({ message: `No sample found with id "${sample_id}"` })
-    }
-
-    if (team_name == null) {
-        team_name = sample!.team_name
-    }
-
-    const newestLabelWithGivenSize = (
-        await prisma.label.groupBy({
-            by: ['team_name', 'width', 'length'],
+        const sample = await prisma.sample.findFirst({
             where: {
-                team_name,
-                width: Number(width),
-                length: Number(length),
-            },
-            _max: {
-                id: true,
+                id: sample_id,
             },
         })
-    ).find((label) => label.team_name === team_name)
 
-    const labelLayout = await prisma.label.findFirst({
-        where: {
-            id: newestLabelWithGivenSize?._max.id!,
-        },
-    })
+        if (sample == null) {
+            return res
+                .status(404)
+                .json({ message: `No sample found with id "${sample_id}"` })
+        }
 
-    try {
-        const label = await generateLabelImageWithLayoutAndSample(
-            labelLayout!,
-            sample!
-        )
+        const labelLayout = await prisma.label.findUnique({
+            where: {
+                id: layout_id,
+            },
+        })
 
-        const base64 = (await label.toBuffer()).toString('base64')
+        if (labelLayout == null) {
+            return res
+                .status(404)
+                .json({ message: `No label found with id "${layout_id}"` })
+        }
 
-        res.status(200).json(base64)
+        try {
+            const label = await generateLabelImageWithLayoutAndSample(
+                labelLayout!,
+                sample!
+            )
+
+            const base64 = (await label.toBuffer()).toString('base64')
+
+            res.status(200).json(base64)
+        } catch (e: any) {
+            res.status(500).json({ message: e.message })
+        }
     } catch (e: any) {
+        console.log(e)
         res.status(500).json({ message: e.message })
     }
 }
 
 export const printLabels: RequestHandler = async (req, res) => {
-    const { images, printer } = req.body
-
     try {
-        const success = await sendLabelsToPrinter(images, printer)
-        res.status(200).json({ success })
-    } catch (err: any) {
-        res.status(500).json({ message: err.message })
+        const { images, printer } = req.body
+
+        try {
+            const success = await sendLabelsToPrinter(images, printer)
+            res.status(200).json({ success })
+        } catch (err: any) {
+            res.status(500).json({ message: err.message })
+        }
+    } catch (e: any) {
+        console.log(e)
+        res.status(500).json({ message: e.message })
     }
 }
 
-// export const deleteLabel: RequestHandler = async (req, res) => {
+export const deleteLabel: RequestHandler = async (req, res) => {
+    try {
+        const { id } = req.params
 
-// }
+        const label = await prisma.label.delete({
+            where: {
+                id: Number(id),
+            },
+        })
+
+        if (label == null) {
+            return res
+                .status(404)
+                .json({ message: `No label found with id "${id}"` })
+        }
+
+        res.status(200).json(label)
+    } catch (e: any) {
+        console.log(e)
+        res.status(500).json({ message: e.message })
+    }
+}
+
+export const updateLabel: RequestHandler = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { team_name, width, length, name, data } = req.body
+
+        const label = await prisma.label.update({
+            where: {
+                id: Number(id),
+            },
+            data: {
+                team_name,
+                name,
+                width,
+                length,
+                data: data ?? {},
+            },
+        })
+
+        if (label == null) {
+            return res
+                .status(404)
+                .json({ message: `No label found with id "${id}"` })
+        }
+
+        res.status(200).json(label)
+    } catch (e: any) {
+        console.log(e)
+        res.status(500).json({ message: e.message })
+    }
+}
