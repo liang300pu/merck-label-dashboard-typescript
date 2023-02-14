@@ -8,19 +8,7 @@ import {
     GridToolbar,
     GridToolbarContainer,
 } from '@mui/x-data-grid'
-import {
-    Box,
-    Button,
-    CircularProgress,
-    CircularProgressProps,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    MenuItem,
-    Select,
-    Typography,
-} from '@mui/material'
+import { Button } from '@mui/material'
 import { Delete, NoteAdd, Refresh, History } from '@mui/icons-material'
 
 import { DateTime } from 'luxon'
@@ -32,6 +20,57 @@ import { State, useActionCreators } from '../../redux'
 
 import './styles.css'
 import PrintLabelsDialog from '../PrintLabelsDialog'
+
+const constantGridColumns: GridColDef[] = [
+    {
+        field: 'id',
+        headerName: 'ID',
+        width: 150,
+        editable: false,
+    },
+    {
+        field: 'date_created',
+        headerName: 'Date Created',
+        flex: 0.6,
+        type: 'date',
+        editable: false,
+        valueGetter(params) {
+            return DateTime.fromISO(params.value as string).toFormat(
+                'MM/dd/yyyy'
+            )
+        },
+    },
+    {
+        field: 'date_modified',
+        headerName: 'Date Modified',
+        flex: 0.6,
+        type: 'date',
+        editable: false,
+        valueGetter(params) {
+            return DateTime.fromISO(params.value as string).toFormat(
+                'MM/dd/yyyy'
+            )
+        },
+    },
+    {
+        field: 'expiration_date',
+        headerName: 'Expiration Date',
+        flex: 0.6,
+        type: 'date',
+        editable: true,
+        valueGetter(params) {
+            return DateTime.fromISO(params.value as string).toFormat(
+                'MM/dd/yyyy'
+            )
+        },
+        valueParser(value, params) {
+            if (params === undefined) return
+            const date = DateTime.fromJSDate(value).toISO()
+            params.row.expiration_date = date
+            return date
+        },
+    },
+]
 
 interface SamplesTableToolbarProps {
     selectedSamples: api.Sample[]
@@ -90,57 +129,6 @@ const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
         </GridToolbarContainer>
     )
 }
-
-const constantGridColumns: GridColDef[] = [
-    {
-        field: 'id',
-        headerName: 'ID',
-        width: 150,
-        editable: false,
-    },
-    {
-        field: 'date_created',
-        headerName: 'Date Created',
-        flex: 0.6,
-        type: 'date',
-        editable: false,
-        valueGetter(params) {
-            return DateTime.fromISO(params.value as string).toFormat(
-                'MM/dd/yyyy'
-            )
-        },
-    },
-    {
-        field: 'date_modified',
-        headerName: 'Date Modified',
-        flex: 0.6,
-        type: 'date',
-        editable: false,
-        valueGetter(params) {
-            return DateTime.fromISO(params.value as string).toFormat(
-                'MM/dd/yyyy'
-            )
-        },
-    },
-    {
-        field: 'expiration_date',
-        headerName: 'Expiration Date',
-        flex: 0.6,
-        type: 'date',
-        editable: true,
-        valueGetter(params) {
-            return DateTime.fromISO(params.value as string).toFormat(
-                'MM/dd/yyyy'
-            )
-        },
-        valueParser(value, params) {
-            if (params === undefined) return
-            const date = DateTime.fromJSDate(value).toISO()
-            params.row.expiration_date = date
-            return date
-        },
-    },
-]
 
 const SamplesTable: React.FC = () => {
     const { team, samples, fields } = useSelector((state: State) => {

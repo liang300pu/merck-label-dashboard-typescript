@@ -3,11 +3,6 @@ import {
     Typography,
     Box,
     Toolbar,
-    Divider,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
     Button,
     Theme,
     Select,
@@ -16,16 +11,12 @@ import {
     SelectChangeEvent,
     InputLabel,
     FormControl,
-    FormHelperText,
 } from '@mui/material'
-import MenuIcon from '@mui/icons-material/Menu'
-import CreateIcon from '@mui/icons-material/Create'
-import FormatShapesIcon from '@mui/icons-material/FormatShapes'
 
 import { Link } from 'react-router-dom'
 import './styles.css'
-import React, { useEffect, useState } from 'react'
-import { EditAttributes, Home } from '@mui/icons-material'
+import React, { useEffect } from 'react'
+import { Home } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
 import {
     State,
@@ -51,6 +42,12 @@ const NavBar: React.FC = () => {
     useEffect(() => {
         fetchAll()
     }, [])
+
+    useEffect(() => {
+        if (teams.length > 0 && team === '') {
+            setTeam(teams[0].name)
+        }
+    }, [team])
 
     const onTeamChange = (event: SelectChangeEvent<string>) => {
         const selectedTeam = event.target.value

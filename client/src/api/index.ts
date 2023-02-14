@@ -17,7 +17,7 @@ import {
     UpdateTeamFieldRequirements,
 } from './types'
 
-const baseURL = 'http://localhost:5000' as const
+const baseURL = 'http://localhost:7777' as const
 
 const baseSamplesURL = `${baseURL}/samples` as const
 const baseDeletedSamplesURL = `${baseURL}/deleted_samples` as const

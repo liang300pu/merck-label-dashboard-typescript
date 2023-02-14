@@ -121,8 +121,6 @@ const CreateSampleForm: React.FC = () => {
     const [createdSample, setCreatedSample] = useState<api.Sample | null>(null)
 
     const onSubmitAndPrintButtonClick = async () => {
-        // TODO: Print?
-        // - They would have to select label size
         const sample = await api.createSample({
             ...newSampleData,
             team_name: team,
