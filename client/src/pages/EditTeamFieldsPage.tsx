@@ -1,5 +1,5 @@
 import NavBar from '../components/NavBar'
-import TeamFieldPanel from '../components/EditTeamFieldsPanel'
+import TeamFieldPanel from '../components/EditTeamPanel'
 
 const EditTeamFieldsPage = () => {
     return (

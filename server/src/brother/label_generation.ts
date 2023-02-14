@@ -1,10 +1,6 @@
 import QRCode from 'qrcode'
 
-import Jimp from 'jimp'
-
 import sharp, { Sharp } from 'sharp'
-
-import path from 'path'
 
 import { Label, Sample } from '@prisma/client'
 
@@ -16,10 +12,10 @@ import { DateTime } from 'luxon'
  * @returns
  */
 async function generateQRCodeImage(
-    sampleID: string,
+    qrCodeData: string,
     size?: { width: number; height: number }
 ): Promise<Buffer> {
-    return await QRCode.toBuffer(sampleID, {
+    return await QRCode.toBuffer(qrCodeData, {
         ...(size ?? {}),
         type: 'png',
         margin: 0,
@@ -59,7 +55,7 @@ export async function generateLabelImageWithLayoutAndSample(
     var qrCodeBuffer: Buffer | undefined = undefined
     if (qrCodeEntity !== undefined) {
         var qrCodeSize = qrCodeEntity?.textSize ?? 50
-        qrCodeBuffer = await generateQRCodeImage(sample.id, {
+        qrCodeBuffer = await generateQRCodeImage(sample.audit_id, {
             width: qrCodeSize,
             height: qrCodeSize,
         })

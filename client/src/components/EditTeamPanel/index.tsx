@@ -108,6 +108,14 @@ function ConfirmDeleteTeamDialog({ open, onClose, onSubmit, teamName }) {
                 >
                     Delete
                 </Button>
+                <Button
+                    onClick={() => {
+                        onClose()
+                    }}
+                    color='primary'
+                >
+                    Close
+                </Button>
             </DialogActions>
         </Dialog>
     )
@@ -163,6 +171,7 @@ const EditTeamFieldsPanel: React.FC = () => {
                 updateField(field.id, field)
             }
         }
+        setSaveChangesSuccessAlertOpen(true)
     }
 
     const updateLocalFieldValue = (id: number, key: string, value: any) => {
@@ -212,6 +221,9 @@ const EditTeamFieldsPanel: React.FC = () => {
         setConfirmDeleteTeamDialogOpen(true)
     }
 
+    const [saveChangesSuccessAlertOpen, setSaveChangesSuccessAlertOpen] =
+        useState(false)
+
     const fieldsTooltipText = `
         Fields are used to specify what information is collected about a sample.
         For naming convention, the field name should be underscore seperated and all lowercase.
@@ -254,6 +266,19 @@ const EditTeamFieldsPanel: React.FC = () => {
 
     return (
         <Box className='teams-and-fields-container'>
+            <Snackbar
+                open={saveChangesSuccessAlertOpen}
+                onClose={() => setSaveChangesSuccessAlertOpen(false)}
+                autoHideDuration={3000}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert
+                    severity='success'
+                    onClose={() => setSaveChangesSuccessAlertOpen(false)}
+                >
+                    Changes to team <i>{stateTeam}</i> have been saved
+                </Alert>
+            </Snackbar>
             <CreateTeamDialog
                 open={createTeamDialogOpen}
                 onClose={() => setCreateTeamDialogOpen(false)}
@@ -266,7 +291,11 @@ const EditTeamFieldsPanel: React.FC = () => {
                 open={confirmDeleteTeamDialogOpen}
                 onClose={() => setConfirmDeleteTeamDialogOpen(false)}
                 onSubmit={() => {
-                    setTeam('')
+                    const nextTeam = teams.filter(
+                        (team) => team.name !== stateTeam
+                    )?.[0]
+                    setLocalFields(fields[nextTeam.name] ?? [])
+                    setTeam(nextTeam?.name ?? '')
                     deleteTeam(stateTeam)
                 }}
                 teamName={stateTeam}

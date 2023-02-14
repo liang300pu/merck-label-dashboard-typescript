@@ -48,8 +48,8 @@
         Based on the team query the correct table for all samples with the provided audit_id
 -   [x] Refactor routes to have a more, intuitive, name/endpoint
 -   [x] Add redux reducers & actions for deleted samples?
--   [x] With the new db design, it might be important for admins to be able to specify the type of a field.
-        Such as, DateTime, Number, String, and have it as a drop down when they view the team on the admin panel.
+-   [~] With the new db design, it might be important for admins to be able to specify the type of a field.
+    Such as, DateTime, Number, String, and have it as a drop down when they view the team on the admin panel.
 
 -   [x] Work on the dashboard for creating teams and adding fields to a team.
 
@@ -60,7 +60,7 @@
 
 !!!!!!
 
--   [ ] CHANGE QR CODE TO STORE THE SAMPLES AUDIT ID. THAT WAY OLDER SAMPLES STILL MAP TO THE NEWEST ONE ON THE SITE. ALSO
+-   [x] CHANGE QR CODE TO STORE THE SAMPLES AUDIT ID. THAT WAY OLDER SAMPLES STILL MAP TO THE NEWEST ONE ON THE SITE. ALSO
         CHANGE THE ID COLUMN OF THE SAMPLES TABLE TO BE THE AUDIT ID.
         !!!!!!
 -   [ ] Samples table has some bugs with the way sample information is passed to it. Need to fix that.

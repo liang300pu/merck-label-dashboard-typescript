@@ -23,7 +23,7 @@ import PrintLabelsDialog from '../PrintLabelsDialog'
 
 const constantGridColumns: GridColDef[] = [
     {
-        field: 'id',
+        field: 'audit_id',
         headerName: 'ID',
         width: 150,
         editable: false,

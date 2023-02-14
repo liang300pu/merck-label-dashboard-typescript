@@ -28,10 +28,12 @@
 ## `GET` /samples/?team_name=
 
 -   Query all samples and find the ones with `team_name`
+-   Team name cannot contain the '=', '&', or '?' characters
 
 ## `GET` /samples/?id=&team_name=
 
 -   Query all samples and find the one with `id` and `team_name`
+-   Team name cannot contain the '=', '&', or '?' characters
 
 ## `GET` /samples/:id/audit
 

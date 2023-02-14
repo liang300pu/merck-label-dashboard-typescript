@@ -34,6 +34,7 @@ import {
     TeamLabel,
     TeamLabelEntity,
     TeamLabelEntityPosition,
+    getTeamLabels,
 } from '../../api'
 
 import './styles.css'
@@ -123,8 +124,7 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
 
     const [newItalicStatus, setNewItalicStatus] = useState<boolean>(false)
 
-    const { createLabel, deleteLabel, updateLabel, fetchTeamsLabels } =
-        useActionCreators()
+    const { deleteLabel, updateLabel, fetchTeamsLabels } = useActionCreators()
 
     const onSave = async (label: CreateTeamLabelRequirements) => {
         if (overrideOnSave) {
@@ -460,37 +460,86 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
     }, [selectedLabelID])
 
     const [createLabelDialogOpen, setCreateLabelDialogOpen] = useState(false)
+    const [editLabelDialogOpen, setEditLabelDialogOpen] = useState(false)
+
+    const onDeleteLabelClick = () => {
+        if (selectedLabelID === null) return
+        const numberID = parseInt(selectedLabelID)
+        deleteLabel(numberID)
+        const nextLabel = labels[team].filter(
+            (label) => label.id !== numberID
+        )?.[0]
+        if (nextLabel !== undefined) {
+            setSelectedLabelID(nextLabel.id.toString())
+        }
+    }
 
     return (
         <Paper className='label-selector-and-editor' elevation={1}>
-            <Box sx={{ minWidth: '100px' }}>
+            <Paper className='label-selector-container'>
                 <FormControl fullWidth>
-                    <InputLabel id='select-label-label'>Label</InputLabel>
+                    <InputLabel id='select-label-label'>
+                        Select a Label
+                    </InputLabel>
                     <Select
                         labelId='select-label-label'
                         onChange={onSelectedLabelChange}
-                        value={selectedEntityID}
+                        label='Select a Label'
+                        value={selectedLabelID ?? ''}
                         sx={{
                             maxHeight: '50px',
                         }}
                     >
-                        <MenuItem value=''>Select a label to edit</MenuItem>
+                        <MenuItem value='' disabled>
+                            Select a label to edit
+                        </MenuItem>
                         {(labels[team] ?? []).map((label, index) => (
-                            <MenuItem value={`${label.id}`}>
+                            <MenuItem value={label.id} key={index}>
                                 {label.width}mm x {label.length}mm -{' '}
                                 {label.name}
                             </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
-            </Box>
+                <Box className='label-options-footer'>
+                    <Button
+                        fullWidth
+                        disabled={selectedLabelID === null}
+                        onClick={() => setEditLabelDialogOpen(true)}
+                    >
+                        Edit Selected Label
+                    </Button>
+                    <Button
+                        fullWidth
+                        disabled={selectedLabelID === null}
+                        onClick={onDeleteLabelClick}
+                    >
+                        Delete Selected Label
+                    </Button>
+                    <Button
+                        fullWidth
+                        onClick={() => setCreateLabelDialogOpen(true)}
+                    >
+                        Create New Label
+                    </Button>
+                </Box>
+            </Paper>
 
-            <IconButton onClick={() => setCreateLabelDialogOpen(true)}>
-                <Add />
-            </IconButton>
+            <CreateLabelDialog
+                open={editLabelDialogOpen}
+                mode='edit'
+                label={currentlyEditingLabel!}
+                onSubmit={() => fetchTeamsLabels(team)}
+                onClose={() => setEditLabelDialogOpen(false)}
+            />
 
             <CreateLabelDialog
                 open={createLabelDialogOpen}
+                mode='create'
+                onSubmit={(label) => {
+                    fetchTeamsLabels(team)
+                    setSelectedLabelID(label.id.toString())
+                }}
                 onClose={() => setCreateLabelDialogOpen(false)}
             />
 
