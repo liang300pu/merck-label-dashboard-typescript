@@ -1,5 +1,5 @@
 :root {
-    --data-grid-expired-color: rgb(59, 173, 166);
+    --data-grid-expired-color: lightcoral;
     --data-grid-expired-opacity: 0.8;
 }
 
@@ -28,4 +28,29 @@
     flex-wrap: wrap;
     padding: 10px;
     margin: 10px;
+}
+
+.expired {
+    opacity: var(--data-grid-expired-opacity);
+    background-color: var(--data-grid-expired-color);
+}
+
+/* Disables row highliting on the data grid */
+.MuiDataGrid-row:not(.Mui-selected):hover {
+    background-color: inherit !important;
+}
+
+/* Disables row highliting on expired rows in the data grid */
+.MuiDataGrid-row.expired:not(.Mui-selected):hover {
+    background-color: var(--data-grid-expired-color) !important;
+}
+
+.MuiDataGrid-row.expired.Mui-selected {
+    opacity: calc(var(--data-grid-expired-opacity) + 0.1);
+    background-color: var(--data-grid-expired-color) !important;
+}
+
+.MuiDataGrid-row.expired.Mui-selected:hover {
+    opacity: calc(var(--data-grid-expired-opacity) + 0.2);
+    background-color: var(--data-grid-expired-color) !important;
 }

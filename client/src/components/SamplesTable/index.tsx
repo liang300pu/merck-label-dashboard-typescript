@@ -72,6 +72,15 @@ const constantGridColumns: GridColDef[] = [
     },
 ]
 
+function isSampleExpired(sample: api.Sample) {
+    console.log(
+        sample
+        // sample.expiration_date.toJSDate() < new Date(Date.now())
+    )
+    // return sample.expiration_date.toJSDate() < new Date(Date.now())
+    return true
+}
+
 interface SamplesTableToolbarProps {
     selectedSamples: api.Sample[]
     onGenerateLabelsClick: () => void
@@ -344,6 +353,9 @@ const SamplesTable: React.FC = () => {
                     componentsProps={{
                         toolbar: { selectedSamples, onGenerateLabelsClick },
                     }}
+                    getRowClassName={(params) =>
+                        isSampleExpired(params.row) ? 'expired' : ''
+                    }
                     checkboxSelection
                     disableSelectionOnClick
                     editMode='row'
