@@ -30,10 +30,9 @@ Find us on GitHub!
     </li>
     <li><a href="#getting-started">Getting Started</li>
     <ul><a href="#docker">Docker Installation</a></ul>
-    <ul><a href="#installation">Installation of Product</a></ul>
+    <ul><a href="#installation">Cloning the Repository</a></ul>
     <ul><a href="#imagebuild">Building the Docker Image</a></ul>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -102,9 +101,8 @@ You can verify that the docker daemon is running by running the following comman
 docker ps
 ```
 
-<h2 id="installation">2. Installation of The Product</h2>
+<h2 id="installation">2. Cloning the Repository</h2>
 
-### Cloning the Repository
 The next step is to clone the repository. You can do this by running the following command in your terminal:
 ```bash
 git clone https://github.com/SomberTM/merck-label-dashboard-typescript.git
@@ -114,29 +112,6 @@ This will clone the repository into a folder called `merck-label-dashboard-types
 > ```bash
 > cd merck-label-dashboard-typescript
 > ```
-
-### Follow these instructions step by step
-> ```bash
-> cd merck-label-dashboard-typescript/server
-> ```
-- npm install
-- Create a file named `.env`
-    - Change 'POSTGRESS_DEV_URI' to your local database URI
-    - URI format is as follows 'postgress://{user}:{password}@localhost:{port}/{database_name}
-    - Default port is 5432 if you set up postgress using postgress app
-    - If your user has no password then omit the ':{password}' portion
-- npx prisma migrate dev --name init --preview-feature
-- npm start
-
-### In another terminal/shell
-
-> Navigate back to `merck-label-dashboard-typescript`
-> ```bash
-> cd merck-label-dashboard-typescript/client
-> ```
-- npm install
-    - May need to add the --force tag to the end
-- npm start
 
 to start the server. You can verify that the everything is running by navigating to `localhost:3000` in your browser. The api is running on `localhost:5000`.
 
@@ -169,22 +144,6 @@ Below is a short demonstration of the user interface
 _For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ROADMAP -->
-## Roadmap (under construction)
-
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-- [ ] Nested Feature
-
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 
 <!-- CONTACT -->
@@ -227,9 +186,9 @@ Alexis Hvostal (Team Leader): [https://github.com/alexishvostal](https://github.
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* []()
-* []()
-* []()
+* Merck montors: Dr. Jonathan Fine and Dr. Terri Bui
+* Dr. Marck D. Ward, Meggie Betz, Kevin Amstutz, Nick Rosenorn
+* All other Data Mine staff at Purdue
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
