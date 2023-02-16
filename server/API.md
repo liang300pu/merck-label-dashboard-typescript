@@ -144,6 +144,7 @@
 ```json
 {
     "id": Int,
+    "name": String,
     "team_name": String,
     "width": Int,
     "length": Int,
@@ -159,9 +160,22 @@
 
 -   Get all labels for a `team`
 
+## `GET` /labels/?team=?width=?length=
+
+-   Get all labels for a `team`, with a specific `width`, and `length`
+
 ## `GET` /labels/:id
 
 -   Get a label with `id`
+
+## `POST` /labels
+
+-   Must provide `team_name`, `width`, `length`, `data`
+
+## `POST` /labels/generate
+
+-   Must provide `sample_id`, `layout_id`
+
 
 ## `DELETE` /labels/:id
 
@@ -171,10 +185,6 @@
 
 -   Update a label with `id`
     -   Must provide `team_name`, `width`, `length`, `data`
-
-## `POST` /labels
-
--   Must provide `team_name`, `width`, `length`, `data`
 
 ---
 
