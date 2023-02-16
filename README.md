@@ -30,10 +30,9 @@ Find us on GitHub!
     </li>
     <li><a href="#getting-started">Getting Started</li>
     <ul><a href="#docker">Docker Installation</a></ul>
-    <ul><a href="#installation">Installation of Product</a></ul>
+    <ul><a href="#installation">Cloning the Repository</a></ul>
     <ul><a href="#imagebuild">Building the Docker Image</a></ul>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -102,9 +101,8 @@ You can verify that the docker daemon is running by running the following comman
 docker ps
 ```
 
-<h2 id="installation">2. Installation of The Product</h2>
+<h2 id="installation">2. Cloning the Repository</h2>
 
-### Cloning the Repository
 The next step is to clone the repository. You can do this by running the following command in your terminal:
 ```bash
 git clone https://github.com/SomberTM/merck-label-dashboard-typescript.git
@@ -148,22 +146,6 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
-<!-- ROADMAP -->
-## Roadmap (under construction)
-
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-- [ ] Nested Feature
-
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-
 <!-- CONTACT -->
 ## Contact
 
@@ -204,9 +186,9 @@ Alexis Hvostal (Team Leader): [https://github.com/alexishvostal](https://github.
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* []()
-* []()
-* []()
+* Merck montors: Dr. Jonathan Fine and Dr. Terri Bui
+* Dr. Marck D. Ward, Meggie Betz, Kevin Amstutz, Nick Rosenorn
+* All other Data Mine staff at Purdue
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
