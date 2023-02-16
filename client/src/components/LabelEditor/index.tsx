@@ -16,6 +16,7 @@ import {
     SelectChangeEvent,
     Tab,
     Tabs,
+    TextField,
 } from '@mui/material'
 import {
     Add,
@@ -700,9 +701,66 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
                         }
                     />
                     <p>
-                        {selectedEntityID !== null
-                            ? `(${entities[selectedEntityID].position.x}, ${entities[selectedEntityID].position.y})`
-                            : `(0, 0)`}
+                        <div style={{ width: '10vw', display: 'flex' }}>
+                            <TextField
+                                size='small'
+                                type='number'
+                                style={{ width: '50%' }}
+                                onChange={(event) => {
+                                    const newPosition = {
+                                        y:
+                                            selectedEntityID !== null
+                                                ? entities[selectedEntityID]
+                                                      .position.y
+                                                : 0,
+                                        x: parseInt(event.target.value),
+                                    }
+                                    if (selectedEntityID !== null) {
+                                        setEntities({
+                                            ...entities,
+                                            [selectedEntityID]: {
+                                                ...entities[selectedEntityID],
+                                                position: newPosition,
+                                            },
+                                        })
+                                    }
+                                }}
+                                value={
+                                    selectedEntityID !== null
+                                        ? entities[selectedEntityID].position.x
+                                        : 0
+                                }
+                            />
+                            <TextField
+                                size='small'
+                                type='number'
+                                style={{ width: '50%' }}
+                                onChange={(event) => {
+                                    const newPosition = {
+                                        x:
+                                            selectedEntityID !== null
+                                                ? entities[selectedEntityID]
+                                                      .position.x
+                                                : 0,
+                                        y: parseInt(event.target.value),
+                                    }
+                                    if (selectedEntityID !== null) {
+                                        setEntities({
+                                            ...entities,
+                                            [selectedEntityID]: {
+                                                ...entities[selectedEntityID],
+                                                position: newPosition,
+                                            },
+                                        })
+                                    }
+                                }}
+                                value={
+                                    selectedEntityID !== null
+                                        ? entities[selectedEntityID].position.y
+                                        : 0
+                                }
+                            />
+                        </div>
                     </p>
                 </div>
 
