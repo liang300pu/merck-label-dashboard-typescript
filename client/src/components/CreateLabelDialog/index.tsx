@@ -4,6 +4,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    InputAdornment,
     MenuItem,
     Select,
     TextField,
@@ -72,7 +73,6 @@ function CreateLabelDialog<T extends Mode = 'create'>({
             team_name: newLabelTeam,
             data: [],
         }
-        console.log(label)
         const newLabel = await createLabel(label)
         onSubmit?.(newLabel)
         onClose?.()
@@ -85,7 +85,7 @@ function CreateLabelDialog<T extends Mode = 'create'>({
             width: newLabelWidth,
             length: newLabelLength,
             team_name: newLabelTeam,
-            data: [],
+            data: label?.data ?? [],
         }
         const updatedLabel = await updateLabel(label!.id, newLabel)
         onSubmit?.(updatedLabel)
@@ -154,7 +154,7 @@ function CreateLabelDialog<T extends Mode = 'create'>({
                     </div>
                     <div className='dialog-input'>
                         <Typography variant='h5' color='primary'>
-                            Width (max 100mm)
+                            Width (max 62mm)
                         </Typography>
                         <TextField
                             label='width'
@@ -162,24 +162,36 @@ function CreateLabelDialog<T extends Mode = 'create'>({
                             value={newLabelWidth}
                             onChange={(event) =>
                                 setNewLabelWidth(
-                                    Math.min(100, parseInt(event.target.value))
+                                    Math.min(62, parseInt(event.target.value))
                                 )
                             }
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position='end'>
+                                        mm
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
                     </div>
                     <div className='dialog-input'>
                         <Typography variant='h5' color='primary'>
-                            Length (max 100mm)
+                            Length
                         </Typography>
                         <TextField
                             label='length'
                             type='number'
                             value={newLabelLength}
                             onChange={(event) =>
-                                setNewLabelLength(
-                                    Math.min(100, parseInt(event.target.value))
-                                )
+                                setNewLabelLength(parseInt(event.target.value))
                             }
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position='end'>
+                                        mm
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
                     </div>
                 </div>

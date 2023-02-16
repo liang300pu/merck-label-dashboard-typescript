@@ -18,6 +18,7 @@ import CreateSamplePage from './pages/CreateSamplePage'
 import ViewDeletedSamplesPage from './pages/ViewDeletedSamplesPage'
 import ViewSampleAuditPage from './pages/ViewSampleAuditPage'
 import LabelEditorPage from './pages/LabelEditorPage'
+import PrintersPage from './pages/PrintersPage'
 
 const router = createBrowserRouter([
     {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
     {
         path: '/editor',
         element: <LabelEditorPage />,
+    },
+    {
+        path: '/printers',
+        element: <PrintersPage />,
     },
 ])
 

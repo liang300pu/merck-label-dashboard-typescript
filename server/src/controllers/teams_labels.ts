@@ -14,7 +14,6 @@ export const getAllLabels: RequestHandler = async (req, res) => {
                     team_name: team as string,
                 },
             })
-            console.log(labels, team)
             return res.status(200).json(labels)
         }
 

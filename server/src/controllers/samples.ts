@@ -292,8 +292,6 @@ export const updateSample: RequestHandler = async (req, res) => {
             date_created: sample.date_created,
         }
 
-        console.log(newSampleData)
-
         const newSample = await prisma.sample.create({
             data: newSampleData,
         })

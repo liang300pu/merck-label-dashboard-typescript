@@ -198,7 +198,6 @@ const EditTeamFieldsPanel: React.FC = () => {
     }
 
     const processFieldRowUpdate = (newRow: TeamField, oldRow: TeamField) => {
-        console.log(newRow)
         setLocalFields((fields) =>
             fields.map((field) => {
                 if (field.id === newRow.id) {

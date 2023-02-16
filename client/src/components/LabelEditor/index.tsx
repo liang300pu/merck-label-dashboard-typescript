@@ -382,9 +382,10 @@ const LabelEditor: React.FC<React.PropsWithChildren<LabelEditorProps>> = ({
 
     const onSaveClick = () => {
         const labelData = Object.values(entities)
+        console.log(labelData)
         const label: CreateTeamLabelRequirements = {
             team_name: team,
-            name: 'Untitled',
+            name: currentlyEditingLabel?.name ?? 'Unknown',
             width: labelSize.width as number,
             length: labelSize.length as number,
             data: labelData,
