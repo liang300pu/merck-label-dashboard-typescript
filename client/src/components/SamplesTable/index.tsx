@@ -73,12 +73,16 @@ const constantGridColumns: GridColDef[] = [
 ]
 
 function isSampleExpired(sample: api.Sample) {
-    console.log(
-        sample
-        // sample.expiration_date.toJSDate() < new Date(Date.now())
-    )
-    // return sample.expiration_date.toJSDate() < new Date(Date.now())
-    return true
+    if (!sample || !sample.expiration_date) return false
+
+    if (sample.expiration_date instanceof DateTime) {
+        return sample.expiration_date.toJSDate() < new Date(Date.now())
+    } else {
+        return (
+            DateTime.fromISO(sample.expiration_date).toJSDate() <
+            new Date(Date.now())
+        )
+    }
 }
 
 interface SamplesTableToolbarProps {

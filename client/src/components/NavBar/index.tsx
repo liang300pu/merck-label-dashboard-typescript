@@ -98,6 +98,11 @@ const NavBar: React.FC = () => {
                             View Deleted Samples
                         </Button>
                     </Link>
+                    <Link to='/printers' className='link-button'>
+                        <Button variant={navigationButtonVariant}>
+                            Printers
+                        </Button>
+                    </Link>
                     <Link to='/fields' className='link-button'>
                         <Button variant={navigationButtonVariant}>
                             Edit Teams
