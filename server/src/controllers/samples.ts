@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express'
 import prisma, { doesTeamExist } from '../db'
 import { Sample } from '@prisma/client'
+import { sendEmailOnSampleCreate } from '../email'
 
 /**
  * Base route /:team/samples
@@ -254,6 +255,8 @@ export const createSample: RequestHandler = async (req, res) => {
     const sample = await prisma.sample.create({
         data,
     })
+
+    sendEmailOnSampleCreate(sample)
 
     res.status(201).json(sample)
 }
