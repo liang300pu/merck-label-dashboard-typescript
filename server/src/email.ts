@@ -37,15 +37,15 @@ export const sendEmailOnSampleCreate = async (sample: Sample) => {
     const getMailInfo = (days: number) => ({
         from: emailUser,
         // @ts-ignore
-        to: `${sample.isid}@merck.com`,
+        to: emailUser,
         subject: `Sample expires ${`${
             days === 0 ? 'today' : `in ${days} days`
-        }}`}`,
+        }`}`,
         // text: `Sample ${sample.name} expires in ${days} days`,
         html: `
             <h1 style="font-family:verdana; color: red; text-align: center;">REMINDER: You have a sample that expires ${`${
                 days === 0 ? 'today' : `in ${days} days`
-            }}`}</h1>
+            }`}</h1>
             <p>Sample:
                 <ul>
                     <li>ID: ${sample.id}</li>  

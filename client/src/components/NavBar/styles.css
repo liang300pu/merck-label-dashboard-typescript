@@ -5,7 +5,6 @@
     justify-content: center;
     align-items: center;
     align-content: center;
-    align-self: center;
     width: auto;
     padding: 5px;
 }
@@ -15,8 +14,6 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    align-content: center;
 }
 
 .nav-navigation-buttons-container > * {
