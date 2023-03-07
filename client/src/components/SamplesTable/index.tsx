@@ -8,7 +8,14 @@ import {
     GridToolbar,
     GridToolbarContainer,
 } from '@mui/x-data-grid'
-import { Button } from '@mui/material'
+import {
+    Button,
+    Checkbox,
+    FormControl,
+    FormControlLabel,
+    InputLabel,
+    Typography,
+} from '@mui/material'
 import { Delete, NoteAdd, Refresh, History } from '@mui/icons-material'
 
 import { DateTime } from 'luxon'
@@ -88,11 +95,13 @@ function isSampleExpired(sample: api.Sample) {
 interface SamplesTableToolbarProps {
     selectedSamples: api.Sample[]
     onGenerateLabelsClick: () => void
+    setFilterExpired: (bool: boolean) => void
 }
 
 const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
     selectedSamples,
     onGenerateLabelsClick,
+    setFilterExpired,
 }) => {
     const team = useSelector((state: State) => state.team)
     const { fetchTeamsSamples, deleteSample } = useActionCreators()
@@ -100,7 +109,6 @@ const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
     return (
         <GridToolbarContainer>
             <GridToolbar />
-
             <Button
                 startIcon={<NoteAdd />}
                 disabled={selectedSamples.length == 0}
@@ -108,7 +116,6 @@ const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
             >
                 Generate Label(s)
             </Button>
-
             <Button
                 startIcon={<Delete />}
                 disabled={selectedSamples.length == 0}
@@ -120,7 +127,6 @@ const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
             >
                 Delete Sample(s)
             </Button>
-
             <Button
                 startIcon={<History />}
                 disabled={selectedSamples.length != 1}
@@ -132,13 +138,22 @@ const SamplesTableToolbar: React.FC<SamplesTableToolbarProps> = ({
                     View Audit Table
                 </Link>
             </Button>
-
             <Button
                 startIcon={<Refresh />}
                 onClick={() => fetchTeamsSamples(team)}
             >
                 Refresh Samples
             </Button>
+            <FormControl>
+                <Checkbox
+                    onChange={(event) => {
+                        setFilterExpired(event.target.checked)
+                    }}
+                />
+            </FormControl>
+            <Typography color='primary' variant='button'>
+                FILTER EXPIRED
+            </Typography>
         </GridToolbarContainer>
     )
 }
@@ -183,6 +198,8 @@ const SamplesTable: React.FC = () => {
         generateDynamicGridColDefs()
         // setGeneratedLabels([]);
     }, [team, fields])
+
+    const [filterExpired, setFilterExpired] = useState<boolean>(false)
 
     const [dynamicGridColDefs, setDynamicGridColDefs] = useState<GridColDef[]>(
         []
@@ -241,6 +258,7 @@ const SamplesTable: React.FC = () => {
                         return params.row.data[field.name]
                     }
                 },
+                filterable: false,
             })
         }
 
@@ -273,7 +291,9 @@ const SamplesTable: React.FC = () => {
      * rows object as row[key] = value. But we need to store the modified value in row.data[key].
      * So if we detect that the newData object has a key that is not in the oldData object
      * we know that the value was modified once resided in the data key of the old data object
-     *  and we need to move it to the data object of newData.
+     * and we need to move it to the data object of newData.
+     *
+     * This makes me dislike material ui a lot.
      */
     const onRowUpdate = (
         newRow: DataGridSampleRow,
@@ -335,7 +355,7 @@ const SamplesTable: React.FC = () => {
                 <DataGrid
                     className='data-grid'
                     experimentalFeatures={{ newEditingApi: true }}
-                    rows={rows}
+                    rows={filterExpired ? rows.filter(isSampleExpired) : rows}
                     columns={columns}
                     onSelectionModelChange={onSelectionChange}
                     getRowId={(row) => row.id as string}
@@ -355,7 +375,11 @@ const SamplesTable: React.FC = () => {
                         Toolbar: SamplesTableToolbar,
                     }}
                     componentsProps={{
-                        toolbar: { selectedSamples, onGenerateLabelsClick },
+                        toolbar: {
+                            selectedSamples,
+                            onGenerateLabelsClick,
+                            setFilterExpired,
+                        },
                     }}
                     getRowClassName={(params) =>
                         isSampleExpired(params.row) ? 'expired' : ''
