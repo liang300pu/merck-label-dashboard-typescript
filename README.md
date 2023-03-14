@@ -41,7 +41,13 @@ Find us on GitHub!
 
 <h2 id="about-the-project"> About The Project</h2>
 
-Here we put a brief introduction of the purpose of the project.
+Our project seeks to optimize laboratory management by creating a digital solution for logistics and safety.
+
+Manually created labels in laboratories create additional challenges in readability, consistency, and reproducibility.  As a result, it can be difficult to manage samples and scientists can forget to discard expired samples which causes lab safety violations.
+
+Approximately 66% of all lab safety violations are due to solutions not being discarded on time.
+
+Our application's goal is to reduce this number while making overall sample management much more convenient for scientists.
 
 
 
@@ -187,7 +193,7 @@ Alexis Hvostal (Team Leader): [https://github.com/alexishvostal](https://github.
 ## Acknowledgments
 
 * Merck montors: Dr. Jonathan Fine and Dr. Terri Bui
-* Dr. Marck D. Ward, Meggie Betz, Kevin Amstutz, Nick Rosenorn
+* Dr. Mark D. Ward, Meggie Betz, Kevin Amstutz, Nick Rosenorn
 * All other Data Mine staff at Purdue
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
