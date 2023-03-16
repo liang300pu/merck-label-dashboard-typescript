@@ -38,7 +38,6 @@ Find us on GitHub!
   </ol>
 </details>
 
-
 <h2 id="about-the-project"> About The Project</h2>
 
 Our project seeks to optimize laboratory management by creating a digital solution for logistics and safety.
@@ -49,60 +48,64 @@ Approximately 66% of all lab safety violations are due to solutions not being di
 
 Our application's goal is to reduce this number while making overall sample management much more convenient for scientists.
 
-
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <h2 id="tools">Tech Stack / Toolkit</h2>
 
+-   [![React][react.js] React][react-url]
 
-- [![React][React.js] React][React-url]
+-   [![typescript][typescript.js] Typescript][typescript-url]
 
-- [![typescript][typescript.js] Typescript][typescript-url]
+-   [![express][express.js] Express][express-url]
 
-- [![express][express.js] Express][express-url]
+-   [![PostgreSQL][postgresql.js] PostgreSQL][postgresql-url]
 
-- [![PostgreSQL][PostgreSQL.js] PostgreSQL][PostgreSQL-url]
+-   [![prisma][prisma.js] Prisma][prisma-url]
 
-- [![prisma][prisma.js] Prisma][prisma-url]
+-   [![redux][redux.js] Redux & Redux-Thunk][redux-url]
 
-- [![redux][redux.js] Redux & Redux-Thunk][redux-url]
-
-- [![mui][mui.js] Material UI][mui-url]
-
+-   [![mui][mui.js] Material UI][mui-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- GETTING STARTED -->
-## Getting Started
 
+## Getting Started
 
 <h2 id="docker">1. Docker Installation Instructions</h2>
 
 The first step is to get the Docker Daemon running on your machine. For Windows and MacOS users, [Docker Desktop](https://www.docker.com/products/docker-desktop/), is the easiest way to get started. Linux users can install docker desktop or the docker engine/server directly through `curl` or `apt-get`. For more information see, [Docker Engine Installation](https://docs.docker.com/engine/install/).
 
 ### --Docker Desktop (Windows, MacOS, Linux)
+
 Once docker desktop has been successfully installed and running, you can verify that it is running by running the following command in your terminal:
+
 ```bash
 docker ps
 ```
+
 If you see a list of running containers, then you are good to go. If you see an error message, then you may need to restart your machine.
 
 ### --Important For Windows Users
+
 If you open Docker Desktop and are stuck waiting for it to start you may need to close Docker Desktop entirely and open up the terminal. Once inside run the command
+
 ```bash
 wsl --update
 ```
+
 The main problem is WSL2 does not auto install the kernel when WSL2 installs, yet Docker Desktop expects it already installed.
 
 ### --Docker Engine (Linux Only)
+
 If you are using the docker engine, you will need to run the following command to start the docker daemon:
+
 ```bash
 sudo dockerd
 ```
+
 You can verify that the docker daemon is running by running the following command in your terminal:
+
 ```bash
 docker ps
 ```
@@ -110,11 +113,15 @@ docker ps
 <h2 id="installation">2. Cloning the Repository</h2>
 
 The next step is to clone the repository. You can do this by running the following command in your terminal:
+
 ```bash
 git clone https://github.com/SomberTM/merck-label-dashboard-typescript.git
 ```
+
 This will clone the repository into a folder called `merck-label-dashboard-typescript` in your current directory.
+
 > Navigate to the `merck-label-dashboard-typescript` folder by running the following command:
+>
 > ```bash
 > cd merck-label-dashboard-typescript
 > ```
@@ -128,16 +135,19 @@ to start the server. You can verify that the everything is running by navigating
 > Double check that you are in the `merck-label-dashboard-typescript` folder and that the docker daemon is running. For Windows and MacOS users, having docker desktop open is sufficient. For Linux users, see the [Docker Engine](#docker-engine-linux-only) section.
 
 The next step is to build the docker image. You can do this by running the following command in your terminal:
+
 ```bash
 docker-compose build
 ```
-Once the image is build you can run 
+
+Once the image is build you can run
+
 ```bash
 docker-compose up
 ```
 
-
 <!-- USAGE EXAMPLES -->
+
 ## Usage
 
 Below is a short demonstration of the user interface
@@ -146,13 +156,12 @@ Below is a short demonstration of the user interface
 
 <!-- Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description` -->
 
-
 _For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
 <!-- CONTACT -->
+
 ## Contact
 
 Project Link: [https://github.com/SomberTM/merck-label-dashboard-typescript](https://github.com/SomberTM/merck-label-dashboard-typescript)
@@ -187,53 +196,41 @@ Alexis Hvostal (Team Leader): [https://github.com/alexishvostal](https://github.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- ACKNOWLEDGMENTS -->
+
 ## Acknowledgments
 
-* Merck montors: Dr. Jonathan Fine and Dr. Terri Bui
+
+* Merck mentors: Dr. Jonathan Fine and Dr. Terri Bui
 * Dr. Mark D. Ward, Meggie Betz, Kevin Amstutz, Nick Rosenorn
 * All other Data Mine staff at Purdue
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [contributors-shield]: https://img.shields.io/github/forks/SomberTM/merck-label-dashboard-typescript?style=social
 [contributors-url]: https://github.com/SomberTM/merck-label-dashboard-typescript
-
 [issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
 [issues-url]: https://github.com/github_username/repo_name/issues
 
-
 <!-->
-[product-screenshot]:
-<-->
 
-
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-
-[React.js]: assets/react.svg
-[React-url]: https://reactjs.org/
-
+[product-screenshot]: --
+[next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[next-url]: https://nextjs.org/
+[react.js]: assets/react.svg
+[react-url]: https://reactjs.org/
 [typescript.js]: assets/typescript.svg
 [typescript-url]: https://www.typescriptlang.org/
-
 [express.js]: assets/express.svg
 [express-url]: https://expressjs.com/
-
-[PostgreSQL.js]: assets/postgres.svg
-[PostgreSQL-url]: https://www.postgresql.org/
-
+[postgresql.js]: assets/postgres.svg
+[postgresql-url]: https://www.postgresql.org/
 [prisma.js]: assets/prisma.svg
 [prisma-url]: https://www.prisma.io/
-
 [redux.js]: assets/redux.svg
 [redux-url]: https://redux.js.org/
-
 [mui.js]: assets/mui.svg
 [mui-url]: https://mui.com/

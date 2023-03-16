@@ -7,6 +7,11 @@ function subtractDays(date: Date, days: number) {
 }
 
 export const sendEmailOnSampleCreate = async (sample: Sample) => {
+    let emailTarget = process.env.DEFAULT_EMAIL_TARGET
+    if (sample.data && sample.data.hasOwnProperty('isid')) {
+        emailTarget = `${sample.data['isid']}@merck.com`
+    }
+
     const expirationDate = sample.expiration_date
     const now = new Date(Date.now())
 
@@ -36,8 +41,7 @@ export const sendEmailOnSampleCreate = async (sample: Sample) => {
 
     const getMailInfo = (days: number) => ({
         from: emailUser,
-        // @ts-ignore
-        to: emailUser,
+        to: emailTarget,
         subject: `Sample expires ${`${
             days === 0 ? 'today' : `in ${days} days`
         }`}`,

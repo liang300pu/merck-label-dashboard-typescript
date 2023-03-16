@@ -11,6 +11,8 @@ COPY vite.config.ts .
 # COPY package-lock.json .
 
 RUN npm install --legacy-peer-deps
+RUN npm install vite@latest --legacy-peer-deps
+RUN vite build
 
 COPY . .
 
