@@ -12,7 +12,7 @@ model Sample {
     // These 6 fields are present on every sample
     id              String   @id @unique @default(uuid())
     date_created    DateTime @default(now())
-    date_modified   DateTime @updatedAt
+    date_modified    DateTime @updatedAt
     expiration_date DateTime @default(dbgenerated("now() + interval '1 day'"))
     audit_id        String   @default(uuid())
     audit_number    Int      @default(autoincrement()) @unique

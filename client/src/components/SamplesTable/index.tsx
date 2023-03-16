@@ -8,14 +8,7 @@ import {
     GridToolbar,
     GridToolbarContainer,
 } from '@mui/x-data-grid'
-import {
-    Button,
-    Checkbox,
-    FormControl,
-    FormControlLabel,
-    InputLabel,
-    Typography,
-} from '@mui/material'
+import { Button, Checkbox, FormControl, Typography } from '@mui/material'
 import { Delete, NoteAdd, Refresh, History } from '@mui/icons-material'
 
 import { DateTime } from 'luxon'
@@ -347,7 +340,7 @@ const SamplesTable: React.FC = () => {
         ...constantGridColumns.slice(1), // Rest of the columns (the 3 dates)
     ]
 
-    const rows = samples[team] ?? []
+    let rows = samples[team] ? [...samples[team]] : []
 
     return (
         <>
@@ -355,7 +348,11 @@ const SamplesTable: React.FC = () => {
                 <DataGrid
                     className='data-grid'
                     experimentalFeatures={{ newEditingApi: true }}
-                    rows={filterExpired ? rows.filter(isSampleExpired) : rows}
+                    rows={(filterExpired ? rows.filter(isSampleExpired) : rows)
+                        // IMPORTANT: Until there is a better way to update a row (material-ui issue),
+                        // we will simply sort by audit id, since it never changes edits
+                        // wont cause re-ordering of rows.
+                        .sort((a, b) => a.audit_id.localeCompare(b.audit_id))}
                     columns={columns}
                     onSelectionModelChange={onSelectionChange}
                     getRowId={(row) => row.id as string}
