@@ -9,6 +9,7 @@ import {
     DialogTitle,
     ImageList,
     ImageListItem,
+    Input,
     MenuItem,
     Paper,
     Select,
@@ -63,9 +64,10 @@ const PrintLabelsDialog: React.FC<PrintLabelsDialogProps> = ({
     onClose,
     samples = [],
 }) => {
-    const [generatedLabelsAsBase64, setGeneratedLabelsAsBase64] = useState<
-        string[]
-    >([])
+    const [generatedLabelsAsBase64, setGeneratedLabelsAsBase64] = useState<{
+        base64: string,
+        quantity: number
+    }[]>([])
 
     const [selectedLabelLayout, setSelectedLabelLayout] =
         useState<api.TeamLabel | null>(null)
@@ -117,7 +119,7 @@ const PrintLabelsDialog: React.FC<PrintLabelsDialogProps> = ({
                 setLabelGenerationProgress((prev) =>
                     Math.min(prev + progressIncrement, 100)
                 )
-                return label
+                return { base64: label, quantity: 1 }
             })
         )
 
@@ -131,7 +133,7 @@ const PrintLabelsDialog: React.FC<PrintLabelsDialogProps> = ({
         if (selectedPrinter === null || generatedLabelsAsBase64.length === 0)
             return false
 
-        return await api.printLabels(generatedLabelsAsBase64, selectedPrinter)
+        return await api.printLabels(generatedLabelsAsBase64, selectedPrinter, { width: selectedLabelLayout!.width, length: selectedLabelLayout!.length })
     }
 
     const onSelectedLabelLayoutChange = (event: SelectChangeEvent<number>) => {
@@ -257,16 +259,25 @@ const PrintLabelsDialog: React.FC<PrintLabelsDialogProps> = ({
                             key={'progress'}
                         />
                     ) : (
-                        <ImageList>
+                        <ImageList sx={{ padding: "1rem" }}>
                             {generatedLabelsAsBase64.map((label, index) => (
                                 <ImageListItem
                                     key={index}
-                                    sx={{ border: '2px solid black' }}
                                 >
                                     <img
-                                        src={`data:image/png;base64,${label}`}
+                                        src={`data:image/png;base64,${label.base64}`}
                                         alt={`Label ${index}`}
+
+                                        style={{ outline: '2px solid black' }}
                                     />
+                                    <Input type="number" onChange={(event) => {
+                                        const newQuantity = parseInt(event.target.value);
+                                        generatedLabelsAsBase64[index] = {
+                                            base64: label.base64,
+                                            quantity: newQuantity
+                                        }
+                                        setGeneratedLabelsAsBase64([...generatedLabelsAsBase64])
+                                    }} value={label.quantity} fullWidth={false} sx={{ width: "50px" }}/>
                                 </ImageListItem>
                             ))}
                         </ImageList>

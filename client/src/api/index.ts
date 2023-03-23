@@ -265,12 +265,17 @@ async function generateLabel(
 }
 
 async function printLabels(
-    labelImages: string[],
-    printer: Printer
+    labelImages: { base64: string, quantity: number }[],
+    printer: Printer,
+    labelSettings: {
+        width: number,
+        length: number
+    }
 ): Promise<boolean> {
     const { data } = await axios.post(`${baseLabelsURL}/print`, {
         images: labelImages,
         printer,
+        labelSettings
     })
     return data.success
 }
