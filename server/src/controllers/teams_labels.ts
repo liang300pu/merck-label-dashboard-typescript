@@ -147,10 +147,14 @@ export const generateLabelImage: RequestHandler = async (req, res) => {
 
 export const printLabels: RequestHandler = async (req, res) => {
     try {
-        const { images, printer } = req.body
+        const { images, printer, labelSettings } = req.body
 
         try {
-            const success = await sendLabelsToPrinter(images, printer)
+            const success = await sendLabelsToPrinter(
+                images,
+                printer,
+                labelSettings
+            )
             res.status(200).json({ success })
         } catch (err: any) {
             res.status(500).json({ message: err.message })

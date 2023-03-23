@@ -22,7 +22,7 @@ model Sample {
     team_name       String
 
     // The "unstructured data" of the sample
-    data            Json     @default("{}")
+    data            Json     @default("{}") 
 
     // This maps to the table name in the database.
     // The model is what prisma will use on the client.

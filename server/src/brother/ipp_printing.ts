@@ -1,17 +1,22 @@
 import Jimp from 'jimp'
-import prisma from '../db'
 import { BrotherQLPrinter } from './printer'
 import { BrotherQLRaster, BrotherQLRasterImages } from './raster'
 import { Printer } from '@prisma/client'
-import sharp, { Sharp } from 'sharp'
 
 export function formatPrinterURL(printer: Printer) {
     return `http://${printer.ip}:631/ipp/print`
 }
 
 export async function sendLabelsToPrinter(
-    base64labels: string[],
-    printer: Printer
+    images: {
+        base64: string
+        quantity: number
+    }[],
+    printer: Printer,
+    labelOptions?: {
+        width: number
+        length: number
+    }
 ) {
     const brotherPrinter = new BrotherQLPrinter(formatPrinterURL(printer))
     const printerAttributes = await brotherPrinter.getAttributes()
@@ -24,24 +29,30 @@ export async function sendLabelsToPrinter(
     // @ts-ignore
     const mediaName: string =
         printerAttributes['printer-attributes-tag']['media-ready']
-    var [width, length] = RegExp(/(\d+)x(\d+)/)
-        .exec(mediaName)!
-        .slice(1)
-        .map(Number)
-    length = length == 0 ? 100 : length
 
-    const images: Jimp[] = []
-    for (const base64label of base64labels) {
-        images.push(await Jimp.read(Buffer.from(base64label, 'base64')))
+    var [width, length] = [labelOptions?.width, labelOptions?.length]
+    if (!labelOptions)
+        [width, length] = RegExp(/(\d+)x(\d+)/)
+            .exec(mediaName)!
+            .slice(1)
+            .map(Number)
+
+    const jimpImages: Jimp[] = []
+
+    for (const image of images) {
+        const imageBuffer = await Jimp.read(Buffer.from(image.base64, 'base64'))
+        for (let i = 0; i < image.quantity; i++) {
+            jimpImages.push(imageBuffer)
+        }
     }
 
     const raster = new BrotherQLRaster({
         media: {
-            width,
-            length,
+            width: width!,
+            length: length!,
             type: 'DieCut',
         },
-        images: images as BrotherQLRasterImages,
+        images: jimpImages as BrotherQLRasterImages,
     }).addAll()
 
     const buffer = raster.buildBuffer()
