@@ -6,6 +6,8 @@ In this developer guide, I will share some of the techniques and tips used in th
 
 ## Table of Contents
 
+-   ### 0. [Foreword](#0-foreword-1)
+
 -   ### 1. [Client](#1-client-1)
 
     -   1.1 [Redux](#11-redux)
@@ -26,7 +28,7 @@ In this developer guide, I will share some of the techniques and tips used in th
 -   ### 3. [Improvement / Future Goals](#3-points-of-improvement)
 
     -   3.1 [Issues with Redux](#31-problems-with-redux)
-        -   3.1.1 [Possible fixes](#311-fixing-redux)
+        -   3.1.1 [Possible fixes](#311-fixes-for-redux)
         -   3.1.2 [Other state management options](#312-other-state-management-options)
     -   3.2 [Component Organization and Reusability](#32-component-organization-and-reusability)
         -   3.2.1 [When to abstract a component](#321-when-to-abstract-a-component)
@@ -34,20 +36,154 @@ In this developer guide, I will share some of the techniques and tips used in th
         -   3.3.1 [Do they make sense?](#331-do-they-make-sense)
         -   3.3.2 [How we can improve](#332-how-we-can-improve)
     -   3.4 [Rasterizing Images](#34-rasterizing-images)
-        -   3.4.1 [Tip: find a library for it](#341-tip-find-a-library)
+        -   3.4.1 [Tip: find a library for it](#341-tip-find-a-library-for-it)
         -   3.4.2 [Pain: create a robust BrotherQL image rasterizer](#342-pain-create-a-robust-brotherql-image-rasterizer)
             -   [Current progress](#23-rasterizing-images)
     -   3.5 [Database Schema](#35-database-schema)
     -   3.6 [Label Editor](#36-label-editor)
         -   3.6.1 [Improvements](#361-improvements)
-    -   3.7 [General Improvements, Bug Fixes, and Known Issues](#37-general-improvements-bug-fixes-and-known-problems)
+    -   3.7 [General Improvements, Bug Fixes, and Known Issues](#37-general-improvements-bug-fixes-and-known-issues)
         -   3.7.1 [General Improvements](#371-general-improvements)
         -   3.7.2 [Bug Fixes](#372-bug-fixes)
         -   3.7.3 [Known Issues](#373-known-problems)
 
+## 0. **Foreword**
+
+Hi
+
 ## 1. **Client**
 
 ### 1.1 **Redux**
+
+We use `redux` to manage the global state of our applications. Currently we are not doing anything in regards to handling async state. Our action creators will return async dispatch functions but you cannot actually await the dispatch when calling it. More about this will be mentioned in the [Improvement / Future Goals](#3-points-of-improvement) section.
+
+Here I will go over the steps for extending the redux store and adding more state. It is important to note that I am not the best at redux and don't know how everything works I just used it.
+
+#### Step 1. **Action Types**
+
+Action types are defined as enums in [action-types/index.ts][action-types-link]. They define what actions can be dispatched to the store. The action types are then used to define the actions and henceforth the action creators. Action types are usually defined for CRUD actions ("CREATE", "READ", "UPDATE", "DELETE"). Heres an example action type for the `samples` table:
+
+```typescript
+enum SampleActionType {
+    FETCH_ALL = 'SAMPLE_FETCH_ALL',
+    FETCH_TEAM = 'SAMPLE_FETCH_TEAM',
+    CREATE = 'SAMPLE_CREATE',
+}
+```
+
+You will notice that there is no `UPDATE` or `DELETE` action type. That is because the action creators for those return a dispatch that calls the API to update or delete then dispatches the `FETCH_ALL` action type to update the state.
+
+#### Step 2. **Actions**
+
+Actions consist of two components, a `type` and `payload`. The `type` is the action type defined in the previous step. The `payload` is the data that will be used to update the state. So, every possible action type will have its own action. For the action type defined above there would be three actions. The actions are defined in [actions/index.ts][actions-link]. Here is an example action for the `FETCH_ALL` action type defined by `SampleActionType`:
+
+```typescript
+export interface FetchAllSamplesAction {
+    type: SampleActionType.FETCH_ALL
+    payload: {
+        [key: string]: Sample[]
+    }
+}
+```
+
+#### Step 3. **Action Creators**
+
+Action creators are functions that take in some argument and create a dispatch function for an action. For example we pass in a team name to an action creator for fetching a teams samples, and it will return a dispatch function that when dispatched, fetches all the samples for that team and updates our store. All of our action creators are defined in [action-creators/index.ts][action-creators-link]. Below is the implementation of the action creator mentioned above:
+
+```typescript
+export const fetchTeamsSamples = (team: string) => {
+    return async (dispatch: Dispatch<SampleAction>) => {
+        const samples = await api.getTeamSamples(team)
+
+        dispatch({
+            type: SampleActionType.FETCH_TEAM,
+            payload: {
+                team,
+                samples,
+            },
+        })
+    }
+}
+```
+
+With this example you can see everything come together from the previous two steps. We are able to type our dispatch function with the action created in [step 2](#step-2-actions) and use our action type from [step 1](#step-1-action-types). Doing the previous to steps allows us to get full type information about what we are dispatching, this not only helps us make sure we are passing the correct data, but helps future developers.
+
+#### Step 4. **Reducers**
+
+Reducers are going to incercept dispatch actions and figure what to do with that new data in relation to the current state. For example, when the function returned fetchTeamsSamples action creator from above calls dispatch, our reducer will get called with the current state and the action as arguments. Our reducer then needs to manipulate the state differently based on the action type. Below you can see the code for the samples reducer:
+
+```typescript
+import { SampleAction } from '../actions'
+import { SampleActionType } from '../action-types'
+import { Sample } from '../../api/types'
+
+const reducer = (
+    state: Record<string, Sample[]> = {},
+    action: SampleAction
+): { [key: string]: Sample[] } => {
+    switch (action.type) {
+        case SampleActionType.FETCH_ALL:
+            return action.payload
+        case SampleActionType.FETCH_TEAM:
+            return {
+                ...state,
+                [action.payload.team]: action.payload.samples,
+            }
+        case SampleActionType.CREATE:
+            return {
+                ...state,
+                [action.payload.team]: [
+                    ...state.samples[action.payload.team],
+                    action.payload.sample,
+                ],
+            }
+        default:
+            return state
+    }
+}
+
+export default reducer
+```
+
+As mentioned previously, our reducer takes two arguments, the samples slice of the global state and the action that was dispatched. The reducer should return the new slice of state. In the case of the FETCH_TEAM action type, we return the previous state, and only update the samples for the team that we fetched in the action.
+
+#### Step 5 **Combining Reducers**
+
+Once we've finished our reducer, the last step is to combine it with all our other reducers.
+
+```typescript
+import { combineReducers } from 'redux'
+
+import samplesReducer from './sampleReducer'
+import deletedSamplesReducer from './deletedSamplesReducer'
+import teamReducer from './teamReducer'
+import teamsReducer from './teamsReducer'
+import printersReducer from './printerReducer'
+import fieldsReducer from './fieldsReducer'
+import labelsReducer from './labelsReducer'
+
+const reducers = combineReducers({
+    printers: printersReducer,
+    samples: samplesReducer,
+    deletedSamples: deletedSamplesReducer,
+    team: teamReducer,
+    teams: teamsReducer,
+    fields: fieldsReducer,
+    labels: labelsReducer,
+})
+
+export default reducers
+
+export type SampleState = ReturnType<typeof samplesReducer>
+export type TeamState = ReturnType<typeof teamReducer>
+export type PrinterState = ReturnType<typeof printersReducer>
+export type TeamsState = ReturnType<typeof teamsReducer>
+export type FieldsState = ReturnType<typeof fieldsReducer>
+
+export type State = ReturnType<typeof reducers>
+```
+
+Here we combine all of our reducers and export some type definitions for each slice of state. You may have noticed I was using the term slice earlier, and that just refers to a portion of the global state that a reducer handles. For example, the samples reducers only has access to the samples state.
 
 ### 1.2 **Components**
 
@@ -180,7 +316,7 @@ A lot of the points will be opionated or based on my personal experience while w
 
 The main problem I have with redux is the amount of code needed to add new state. First you have to define your action types, then you can make your actions, then action creators, and finally reducers. Although order may vary there are a lot of steps to implementing new state into the app. It also makes it very difficult to maintain and keep track of where specific state information is stored. I also found it difficult to manage async state such as api requests. Although, that was due to my lack of experience with redux, and not knowing the powers of redux toolkit.
 
-#### 3.1.1 **Fixing Redux**
+#### 3.1.1 **Fixes for Redux**
 
 -   [Redux Toolkit](https://redux-toolkit.js.org/usage/usage-guide) and [RTK Query](https://redux-toolkit.js.org/rtk-query/overview)
     -   This will drastically improve the amount of code need to add new state and reduce the current amount of boilerplate code.
@@ -196,6 +332,39 @@ The main problem I have with redux is the amount of code needed to add new state
 -   Remarks
     -   State management is a very opionated topic and I am certainly no expert. But, at the end of the day it comes down to whats the best fit for the project and developer experience. It's always good to explore the many options out there but can be difficult to pick the "perfect" one without actually using it.
 
+### 3.2 **Component Organization and Reusability**
+
+#### 3.2.1 **When to abstract a component**
+
+### 3.3 **API Routes**
+
+#### 3.3.1 **Do they make sense?**
+
+#### 3.3.2 **How we can improve**
+
+### 3.4 **Rasterizing images**
+
+#### 3.4.1 **Tip: find a library for it**
+
+#### 3.4.2 **Pain: create a robust BrotherQL image rasterizer**
+
+### 3.5 **Database Schema**
+
+### 3.6 **Label Editor**
+
+#### 3.6.1 **Improvements**
+
+### 3.7 **General Improvements, Bug Fixes, and Known Issues**
+
+#### 3.7.1 **General Improvements**
+
+#### 3.7.2 **Bug Fixes**
+
+#### 3.7.3 **Known Issues**
+
 [schema-link]: /server/prisma/schema.prisma 'schema.prisma'
 [api-def-link]: /server/API.md 'API.md'
 [rasterizer-link]: /server/src/brother/raster.ts 'raster.ts'
+[action-types-link]: /client/src/redux/action-types/index.ts 'action-types/index.ts'
+[actions-link]: /client/src/redux/actions/index.ts 'actions/index.ts'
+[action-creators-link]: /client/src/redux/action-creators/index.ts 'action-creators/index.ts'
