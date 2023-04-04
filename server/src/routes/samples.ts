@@ -7,6 +7,8 @@ import {
     updateSample,
     getAuditTrail,
     deleteSamples,
+    getTotalSampleCount,
+    getSampleCountByMonth
 } from "../controllers/samples";
 
 /**
@@ -15,6 +17,10 @@ import {
 const router = express.Router({
     mergeParams: true
 });
+
+// routes for home page stats
+router.get('/sample_count', getTotalSampleCount)
+router.get('/sample_count_month', getSampleCountByMonth)
 
 router.get("/", getSamples);
 router.post("/", createSample);
@@ -29,6 +35,7 @@ router.get("/:id/audit", getAuditTrail);
 
 // Clashes with the getSample route
 // router.get('/deleted', getDeletedSamples);
+
 
 
 export default router;

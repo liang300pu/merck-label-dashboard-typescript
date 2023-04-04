@@ -363,3 +363,26 @@ export const deleteSamples: RequestHandler = async (req, res) => {
 
     res.status(200).json(samples)
 }
+
+// get the total number of samples created
+export const getTotalSampleCount: RequestHandler = async (req, res) => {
+    const sampleCounts = await prisma.sample.count()
+  
+    res.status(200).json({ count: sampleCounts })
+  }
+  
+
+// get the number of unique samples created in each month for current year
+export const getSampleCountByMonth: RequestHandler = async (req, res) => {
+    const sampleCounts = await prisma.$queryRaw`
+    SELECT EXTRACT(MONTH from date_created) as month, CAST(COUNT(id) as integer) as count
+    FROM samples
+    WHERE EXTRACT(YEAR from date_created) = EXTRACT(YEAR from NOW())
+    GROUP BY month
+    ORDER BY month ASC
+    `;
+      
+    res.status(200).json(sampleCounts)
+ }
+  
+  
