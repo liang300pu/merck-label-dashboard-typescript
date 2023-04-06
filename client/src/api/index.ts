@@ -155,6 +155,17 @@ async function getAllDeletedSamples(): Promise<Record<string, Sample[]>> {
     return samples
 }
 
+async function getSampleCountForAllTeams() {
+    const sampleCount = await axios.get(`${baseSamplesURL}/sample_count`);
+    return sampleCount
+}
+
+async function getMonthlySampleCountForAllTeams() {
+    const monthlySampleCount = await axios.get(`${baseSamplesURL}/sample_count_month`)
+    return monthlySampleCount
+}
+
+
 // ----------------------------------------
 
 // * @route /fields
@@ -330,6 +341,8 @@ export {
     getTeamSample,
     getAuditSamples,
     getAllDeletedSamples,
+    getSampleCountForAllTeams,
+    getMonthlySampleCountForAllTeams,
     createSample,
     updateSample,
     deleteSample,
