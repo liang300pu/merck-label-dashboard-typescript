@@ -24,7 +24,7 @@ const RootPage = () => {
         { year: 2011, count: 20 },
     ] as const
 
-    const chartRef = useRef<HTMLCanvasElement>(null)
+    const barChartRef = useRef<HTMLCanvasElement>(null)
 
     // use the api to get the data
 
@@ -63,28 +63,40 @@ const RootPage = () => {
 
     useEffect(() => {
         let chart: Chart | null = null
-        if (chartRef.current !== null) {
-            chart = new Chart(chartRef.current, {
+        if (barChartRef.current !== null) {
+            chart = new Chart(barChartRef.current, {
                 type: 'bar',
                 data: {
                     labels: Object.values(monthDayToString),
                     datasets: [
                         {
+                            type: 'bar',
+                            label: 'Samples by Month',
+                            data: chartData,
+                        },
+                        {
+                            type: 'line',
                             label: 'Samples by Month',
                             data: chartData,
                         },
                     ],
                 },
+                options: {
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { display: false } },
+                    },
+                },
             })
         }
 
         return () => chart?.destroy()
-    }, [chartRef, chartData])
+    }, [barChartRef, chartData])
 
     return (
         <>
             <NavBar />
-            <canvas ref={chartRef} />
+            <canvas ref={barChartRef} />
         </>
     )
 }
